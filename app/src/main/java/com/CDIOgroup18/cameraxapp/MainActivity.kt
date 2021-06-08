@@ -1,25 +1,28 @@
 package com.CDIOgroup18.cameraxapp
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import java.util.concurrent.Executors
-import androidx.camera.core.*
-import androidx.camera.lifecycle.ProcessCameraProvider
-import com.squareup.okhttp.OkHttpClient
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
-import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
-
+import java.util.concurrent.Executors
 
 
 typealias LumaListener = (luma: Double) -> Unit
@@ -27,8 +30,12 @@ typealias LumaListener = (luma: Double) -> Unit
 class MainActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
 
+    private var savedUri: String? = null
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         // Set up the listener for take photo button
         camera_capture_button.setOnClickListener { takeAndSendPhoto() }
         // listener for testButton
-        testButton.setOnClickListener { switchToResponseActivity() }
+        switchButton.setOnClickListener { switchToResponseActivity() }
 
         outputDirectory = getOutputDirectory()
 
@@ -53,12 +60,35 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onRestart() {
+        super.onRestart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        cameraExecutor.shutdown()
+    }
+
+
     private fun switchToResponseActivity() {
 
-        intent = Intent(this, ResponseActivity2::class.java)
-        startActivity(intent)
+        if (savedUri.equals(null)) {
+            Toast.makeText(this,"No photo taken", Toast.LENGTH_SHORT).show()
+        } else
+        {
+            intent = Intent(this, ResponseActivity2::class.java)
+            intent.putExtra("imagePath", savedUri)
+            startActivity(intent)
 
-        TODO("Not yet implemented")
+        }
     }
 
     private fun takeAndSendPhoto() {
@@ -66,10 +96,10 @@ class MainActivity : AppCompatActivity() {
         val imageCapture = imageCapture ?: return
 
         // Create time-stamped output file to hold the image
-        val photoFile = File(
-            outputDirectory,
-            SimpleDateFormat(FILENAME_FORMAT, Locale.US
+        val photoFile = File(outputDirectory,SimpleDateFormat(FILENAME_FORMAT, Locale.US
             ).format(System.currentTimeMillis()) + ".jpg")
+
+        //val photoFile = File(outputDirectory,"aPhoto.jpg")
 
         // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
@@ -83,12 +113,14 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val savedUri = Uri.fromFile(photoFile)
+                    savedUri = Uri.fromFile(photoFile).toString()
                     val msg = "Photo capture succeeded: $savedUri"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
+
                 }
             })
+
 
         //TODO send image to server and wait for respons
 
@@ -143,10 +175,7 @@ class MainActivity : AppCompatActivity() {
             mediaDir else filesDir
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        cameraExecutor.shutdown()
-    }
+
 
     companion object {
         private const val TAG = "CameraXBasic"
