@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">CameraX APP</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="testbutton">testButton</string>
+    <string name="declineButton">Decline</string>
+    <string name="acceptButton">Accept</string>
 </resources>

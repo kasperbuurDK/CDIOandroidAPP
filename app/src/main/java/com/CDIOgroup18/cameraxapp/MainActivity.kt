@@ -2,6 +2,7 @@ package com.CDIOgroup18.cameraxapp
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
@@ -11,12 +12,16 @@ import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
+import com.squareup.okhttp.OkHttpClient
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
+
+
+
 typealias LumaListener = (luma: Double) -> Unit
 
 class MainActivity : AppCompatActivity() {
@@ -38,14 +43,25 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Set up the listener for take photo button
-        camera_capture_button.setOnClickListener { takePhoto() }
+        camera_capture_button.setOnClickListener { takeAndSendPhoto() }
+        // listener for testButton
+        testButton.setOnClickListener { switchToResponseActivity() }
 
         outputDirectory = getOutputDirectory()
 
         cameraExecutor = Executors.newSingleThreadExecutor()
+
     }
 
-    private fun takePhoto() {
+    private fun switchToResponseActivity() {
+
+        intent = Intent(this, ResponseActivity2::class.java)
+        startActivity(intent)
+
+        TODO("Not yet implemented")
+    }
+
+    private fun takeAndSendPhoto() {
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
@@ -73,6 +89,11 @@ class MainActivity : AppCompatActivity() {
                     Log.d(TAG, msg)
                 }
             })
+
+        //TODO send image to server and wait for respons
+
+
+
     }
 
     private fun startCamera() {
@@ -137,6 +158,7 @@ class MainActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults:
         IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
                 startCamera()
