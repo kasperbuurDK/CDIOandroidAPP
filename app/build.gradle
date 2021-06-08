@@ -59,4 +59,11 @@ dependencies {
     implementation 'com.squareup.okhttp:okhttp:2.7.5'
 //coil for image loading
     implementation("io.coil-kt:coil:1.2.2")
+
+    def preference_version = "1.1.1"
+    // Java language implementation
+    implementation("androidx.preference:preference:$preference_version")
+    // Kotlin
+    implementation("androidx.preference:preference-ktx:$preference_version")
+
 }
