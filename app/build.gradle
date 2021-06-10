@@ -56,7 +56,8 @@ dependencies {
     implementation 'androidx.camera:camera-view:1.0.0-alpha25'
 
     //okHttp for Http communication
-    implementation 'com.squareup.okhttp:okhttp:2.7.5'
+    //implementation 'com.squareup.okhttp:okhttp:2.7.5'
+    implementation("com.squareup.okhttp3:okhttp:4.9.0")
 //coil for image loading
     implementation("io.coil-kt:coil:1.2.2")
 
