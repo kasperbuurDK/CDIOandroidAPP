@@ -12,8 +12,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CameraXAPP">
-        <activity android:name=".ALotOfButtons"></activity>
+        android:theme="@style/Theme.CameraXAPP"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".ImgValidation"></activity>
         <activity android:name=".ResponseActivity2" />
         <activity android:name=".MainActivity">
             <intent-filter>

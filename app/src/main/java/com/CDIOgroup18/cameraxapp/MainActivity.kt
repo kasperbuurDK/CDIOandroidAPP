@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -18,10 +19,17 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+
+
+
+
+
+
+typealias LumaListener = (luma: Double) -> Unit
+
+
 
 class MainActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
@@ -30,12 +38,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
 
-    // just a test
-    private lateinit var ourTest : TestClass
+
 
     // TODO store last 10 (or so) images. Make the system more robust for
    // private var counter: Int? = null
-
+    var prefs: SharedPreferences? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,19 +61,12 @@ class MainActivity : AppCompatActivity() {
         // listener for testButton
         switchButton.setOnClickListener { switchToResponseActivity() }
 
-        ourTest = TestClass(400)
         outputDirectory = getOutputDirectory()
 
         cameraExecutor = Executors.newSingleThreadExecutor()
-       // prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
-    }
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
-    private fun addOneToOurTest() {
-        ourTest.thisClassInt++;
-        print("\n\n\n")
-        println(ourTest.thisClassInt)
-        print("\n\n\n")
     }
 
     override fun onRestart() {
@@ -100,15 +100,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+
+
     private fun takeAndSendPhoto() {
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
         // Create time-stamped output file to hold the image
-        val photoFile = File(outputDirectory,SimpleDateFormat(FILENAME_FORMAT, Locale.US
-            ).format(System.currentTimeMillis()) + ".jpg")
-
+        //val photoFile = File(outputDirectory,SimpleDateFormat(FILENAME_FORMAT, Locale.US
+        //    ).format(System.currentTimeMillis()) + ".jpg")
         //val photoFile = File(outputDirectory,"aPhoto.jpg")
+        val photoFile = File(outputDirectory,"aPhoto.jpg")
 
         // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
@@ -127,8 +130,18 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
 
+                    val thread = SendImage(outputDirectory)
+                    // f[ parameter med lateinit var outputDirectory
+                    thread.start()
+
+
                 }
+
+
+
             })
+
+
 
     }
 
@@ -181,11 +194,14 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
     companion object {
         private const val TAG = "CameraXBasic"
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+
+
     }
 
     override fun onRequestPermissionsResult(
@@ -202,5 +218,7 @@ class MainActivity : AppCompatActivity() {
                 finish()
             }
         }
+
+
     }
 }
