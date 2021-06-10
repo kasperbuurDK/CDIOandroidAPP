@@ -1,6 +1,8 @@
 package com.CDIOgroup18.cameraxapp
 
 import android.content.Intent
+import android.media.Image
+import android.media.ImageReader
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -37,6 +39,8 @@ class ResponseActivity2 : AppCompatActivity() {
         progressBar.visibility = View.GONE
 
         imagePath = intent.getStringExtra("imagePath").toString()
+
+
 
     }
 
@@ -136,6 +140,8 @@ class ResponseActivity2 : AppCompatActivity() {
         br.close()
         return sb.toString()
     }
+
+
 
 
 }

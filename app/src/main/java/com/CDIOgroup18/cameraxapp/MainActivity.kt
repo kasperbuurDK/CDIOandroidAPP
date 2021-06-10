@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -24,9 +23,6 @@ import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-
-typealias LumaListener = (luma: Double) -> Unit
-
 class MainActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
 
@@ -34,9 +30,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
 
+    // just a test
+    private lateinit var ourTest : TestClass
+
     // TODO store last 10 (or so) images. Make the system more robust for
    // private var counter: Int? = null
-    var prefs: SharedPreferences? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,12 +54,19 @@ class MainActivity : AppCompatActivity() {
         // listener for testButton
         switchButton.setOnClickListener { switchToResponseActivity() }
 
+        ourTest = TestClass(400)
         outputDirectory = getOutputDirectory()
 
         cameraExecutor = Executors.newSingleThreadExecutor()
+       // prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(this)
+    }
 
+    private fun addOneToOurTest() {
+        ourTest.thisClassInt++;
+        print("\n\n\n")
+        println(ourTest.thisClassInt)
+        print("\n\n\n")
     }
 
     override fun onRestart() {

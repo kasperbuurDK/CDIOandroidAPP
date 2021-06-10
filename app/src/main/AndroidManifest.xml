@@ -2,11 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.CDIOgroup18.cameraxapp">
 
-    <uses-feature android:name="android.hardware.camera.any" />
-
-    <!-- permission for camera -->
-    <uses-permission android:name="android.permission.CAMERA" />
-    <!-- permission for internet -->
+    <uses-feature android:name="android.hardware.camera.any" /> <!-- permission for camera -->
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- permission for internet -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -16,6 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CameraXAPP">
+        <activity android:name=".ALotOfButtons"></activity>
         <activity android:name=".ResponseActivity2" />
         <activity android:name=".MainActivity">
             <intent-filter>
