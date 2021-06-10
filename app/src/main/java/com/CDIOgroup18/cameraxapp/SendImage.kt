@@ -31,7 +31,6 @@ class SendImage(outputDirectory:File) :Thread() {
                 println("successful POST"+response.body!!.string())
             }
         }
-
     }
 
 

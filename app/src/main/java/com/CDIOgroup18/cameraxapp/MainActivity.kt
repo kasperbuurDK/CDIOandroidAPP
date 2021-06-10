@@ -2,11 +2,9 @@ package com.CDIOgroup18.cameraxapp
 
 import android.Manifest
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -22,27 +20,12 @@ import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-
-
-
-
-
-typealias LumaListener = (luma: Double) -> Unit
-
-
-
 class MainActivity : AppCompatActivity() {
-    private var imageCapture: ImageCapture? = null
 
+    private var imageCapture: ImageCapture? = null
     private var savedUri: String? = null
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
-
-
-
-    // TODO store last 10 (or so) images. Make the system more robust for
-   // private var counter: Int? = null
-    var prefs: SharedPreferences? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,15 +41,12 @@ class MainActivity : AppCompatActivity() {
 
         // Set up the listener for take photo button
         camera_capture_button.setOnClickListener { takeAndSendPhoto() }
-        // listener for testButton
+
         switchButton.setOnClickListener { switchToResponseActivity() }
 
         outputDirectory = getOutputDirectory()
 
         cameraExecutor = Executors.newSingleThreadExecutor()
-
-        prefs = PreferenceManager.getDefaultSharedPreferences(this)
-
     }
 
     override fun onRestart() {
@@ -96,12 +76,8 @@ class MainActivity : AppCompatActivity() {
             intent = Intent(this, ResponseActivity2::class.java)
             intent.putExtra("imagePath", savedUri)
             startActivity(intent)
-
         }
     }
-
-
-
 
     private fun takeAndSendPhoto() {
         // Get a stable reference of the modifiable image capture use case

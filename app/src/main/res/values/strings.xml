@@ -6,4 +6,5 @@
     <string name="acceptButton">Accept</string>
     <string name="response_image">Response image from server</string>
     <string name="testbutton">testButton</string>
+    <string name="pile">Pile</string>
 </resources>
