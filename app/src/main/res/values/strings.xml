@@ -6,4 +6,9 @@
     <string name="acceptButton">Accept</string>
     <string name="response_image">Response image from server</string>
     <string name="testbutton">testButton</string>
+    <string name="del1">Go to main screen</string>
+    <string name="imageToReview" />
+    <string name="del">Send Image</string>
+    <string name="goButton">Go</string>
+    <string name="undoButton">Undo</string>
 </resources>

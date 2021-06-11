@@ -14,9 +14,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CameraXAPP"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ImgValidation"></activity>
-        <activity android:name=".ResponseActivity2" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".ValidateActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="landscape"></activity>
+        <activity android:name=".ResponseActivity2"
+            android:configChanges="orientation"
+            android:screenOrientation="landscape"/>
+        <activity android:name=".MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,3 +32,4 @@
     </application>
 
 </manifest>
+
