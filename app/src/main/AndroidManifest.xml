@@ -3,8 +3,8 @@
     package="com.CDIOgroup18.cameraxapp">
 
     <uses-feature android:name="android.hardware.camera.any" /> <!-- permission for camera -->
-    <uses-permission android:name="android.permission.CAMERA" /> <!-- permission for internet -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- permission for internet -->
 
     <application
         android:allowBackup="true"
