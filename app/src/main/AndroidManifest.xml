@@ -14,9 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CameraXAPP"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ValidateActivity"
+        <activity
+            android:name=".ValidateActivity"
             android:configChanges="orientation"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
         <activity android:name=".ResponseActivity2"
             android:configChanges="orientation"
             android:screenOrientation="landscape"/>
