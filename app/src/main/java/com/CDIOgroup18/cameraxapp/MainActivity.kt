@@ -103,9 +103,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-
-
     private fun takePhotoGoToValidate() {
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
