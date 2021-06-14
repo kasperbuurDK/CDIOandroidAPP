@@ -17,6 +17,7 @@ import okhttp3.OkHttpClient
 class ValidateActivity : AppCompatActivity()  {
 
     private var savedUri: String? = null
+    private lateinit var outputDirectory: File
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +28,12 @@ class ValidateActivity : AppCompatActivity()  {
             startActivity(intent)
         }
         goButton.setOnClickListener {
-            intent = Intent(this, ResponseActivity2::class.java)
-            startActivity(intent)
+            println("TRY SEND TO SERVER")
+
+            outputDirectory = getOutputDirectory()
+            val thread = SendImage(outputDirectory)
+            thread.start()
+
         }
         savedUri=intent.getStringExtra("imagePath").toString()
         imageTakenView.load(savedUri)
@@ -50,4 +55,10 @@ class ValidateActivity : AppCompatActivity()  {
         super.onDestroy()
     }
 
+    private fun getOutputDirectory(): File {
+        val mediaDir = externalMediaDirs.firstOrNull()?.let {
+            File(it, resources.getString(R.string.app_name)).apply { mkdirs() } }
+        return if (mediaDir != null && mediaDir.exists())
+            mediaDir else filesDir
+    }
 }

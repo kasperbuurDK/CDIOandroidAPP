@@ -134,9 +134,12 @@ class TakePhotoActivity : AppCompatActivity() {
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
 
+                    /*
                     val thread = SendImage(outputDirectory)
                     thread.start()
 
+
+                     */
                     goToValidate()
 
                 }
@@ -148,6 +151,7 @@ class TakePhotoActivity : AppCompatActivity() {
     private fun goToValidate() {
         intent = Intent(this, ValidateActivity::class.java)
         intent.putExtra("imagePath", savedUri)
+        intent.putExtra("outputD", outputDirectory)
         startActivity(intent)
     }
 
