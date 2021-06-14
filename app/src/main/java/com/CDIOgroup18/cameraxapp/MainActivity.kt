@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.util.Size
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
@@ -20,8 +21,10 @@ import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+
 class MainActivity : AppCompatActivity() {
 
+    private var status: String = "No statusIntent"
     private var imageCapture: ImageCapture? = null
     private var savedUri: String? = null
     private lateinit var outputDirectory: File
@@ -40,21 +43,41 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Set up the listener for take photo button
-        camera_capture_button.setOnClickListener { takeAndSendPhoto() }
+        take_photo_button.setOnClickListener { takePhotoGoToValidate() }
 
-        switchButton.setOnClickListener { switchToResponseActivity() }
+        //inform user of status
+        var ourToastMessage = ""
+
+        status = intent.getStringExtra("status").toString()
+
+        if (status == "resumed"){
+            ourToastMessage = "Just resumed with no statusIntent"
+        }
+        else if (status == "nextMove") {
+            ourToastMessage = "Ready for next photo"
+        } else if (status == "no statusIntent") {
+            ourToastMessage = "no status"
+        }
+
+        Toast.makeText(this, ourToastMessage , Toast.LENGTH_SHORT).show()
+
+
 
         outputDirectory = getOutputDirectory()
-
         cameraExecutor = Executors.newSingleThreadExecutor()
+
     }
 
     override fun onRestart() {
         super.onRestart()
+
     }
 
     override fun onResume() {
         super.onResume()
+
+
+
     }
 
     override fun onPause() {
@@ -76,10 +99,14 @@ class MainActivity : AppCompatActivity() {
             intent = Intent(this, ResponseActivity2::class.java)
             intent.putExtra("imagePath", savedUri)
             startActivity(intent)
+
         }
     }
 
-    private fun takeAndSendPhoto() {
+
+
+
+    private fun takePhotoGoToValidate() {
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
@@ -110,15 +137,18 @@ class MainActivity : AppCompatActivity() {
                     // f[ parameter med lateinit var outputDirectory
                     thread.start()
 
+                    goToValidate()
 
                 }
 
-
-
             })
 
+    }
 
-
+    private fun goToValidate() {
+        intent = Intent(this, ValidateActivity::class.java)
+        intent.putExtra("imagePath", savedUri)
+        startActivity(intent)
     }
 
     private fun startCamera() {
@@ -135,8 +165,10 @@ class MainActivity : AppCompatActivity() {
                     it.setSurfaceProvider(viewFinder.surfaceProvider)
                 }
 
-            imageCapture = ImageCapture.Builder()
-                .build()
+            // set properties of cameracapture
+            imageCapture = ImageCapture.Builder().
+            setTargetResolution(Size(1980,1080)).
+            build()
 
             // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
