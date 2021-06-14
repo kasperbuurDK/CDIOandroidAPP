@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/imageTakenView"
-        android:layout_width="400dp"
-        android:layout_height="400dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:contentDescription="@string/imageToReview"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
