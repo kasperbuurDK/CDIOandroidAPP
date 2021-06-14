@@ -133,8 +133,8 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
 
+                    //rykkes til validate
                     val thread = SendImage(outputDirectory)
-                    // f[ parameter med lateinit var outputDirectory
                     thread.start()
 
                     goToValidate()

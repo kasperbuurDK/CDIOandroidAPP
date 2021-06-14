@@ -10,8 +10,12 @@ class SendImage(outputDirectory:File) :Thread() {
     var myFile :  File = outputDirectory
     private val client = OkHttpClient()
 
+
+
+
     //lav til private
     public override fun run() {
+
         val file = File(myFile,"aPhoto.jpg")
 
         val requestBody = MultipartBody.Builder()
