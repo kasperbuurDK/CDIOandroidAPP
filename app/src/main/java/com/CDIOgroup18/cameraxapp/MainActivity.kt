@@ -1,31 +1,32 @@
 package com.CDIOgroup18.cameraxapp
 
+
 import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
-import android.util.Size
-import android.widget.Toast
+import android.os.Handler
+import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
-import okhttp3.OkHttpClient
-import java.io.File
-import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executor
 import java.util.concurrent.Executors
-
-
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var status: String
+    companion object {
+        const val TAG = "CameraXBasic"
+        const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
+        const val REQUEST_CODE_PERMISSIONS = 10
+        val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+        var myGameID: Int = -1
+
+    }
+
+    var bgThread: Executor =
+        Executors.newSingleThreadExecutor() // handle for backgroundThread (network com)
+    var uiThread = Handler(Looper.getMainLooper()) // handle for activity
+
+
+    private var status: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,24 +35,55 @@ class MainActivity : AppCompatActivity() {
         //inform user of status
         var ourMessage = ""
 
-        status = if (intent.getStringExtra("status") != null) ({
-        }).toString() else "just_started"
+        if (intent.getStringExtra("status") != null) {
+            status = intent.getStringExtra("status")
+        } else {
+            status = "just_started"
+        }
+
+        println("\n IN onCreate status is: $status")
 
         when (status) {
             "just_started" -> {
-                ourMessage = "Welcome to SmartSolitareSolver\n " +
-                        "Please make ypur choice\n " +
-                        "And remember to enjoy"
+
+                textView.text = "Please wait contacting server....\n " +
+                        "Obtaning game ID"
+
+                bgThread.execute(Runnable {
+                    try {
+                        val thread = StartMessageToServer()
+                        thread.start()
+
+                        uiThread.post(Runnable {
+                            ourMessage = "Welcome to SmartSolitareSolver\n " +
+                                    "Please make your choice\n " +
+                                    "And remember to enjoy\n " +
+                                    "Your game ID is: $myGameID"
+
+                            textView.text = ourMessage
+
+                        })
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        uiThread.post(Runnable {
+
+                        })
+                    }
+                })
+
             }
-            "nextMove" -> {
-                ourMessage = "Ready for next photo"
+            "fromTakePhoto" -> {
+                ourMessage = "Returned from TakePhoto\n " +
+                        "Your gameID is still ${MainActivity.myGameID}"
+                textView.text = ourMessage
             }
-            "no statusIntent" -> {
-                ourMessage = "no status"
+            else -> {
+                ourMessage = "Something is wrong"
+                textView.text = ourMessage
+
             }
         }
-
-       textView.text = ourMessage
 
         toTakePhoto_Button.setOnClickListener{ goToTakePhoto()}
         startNewGame_Button.setOnClickListener{ restartToServer()}
@@ -71,12 +103,20 @@ class MainActivity : AppCompatActivity() {
     override fun onRestart() {
         super.onRestart()
 
+        status = if (intent.getStringExtra("status") != null) ({
+        }).toString() else "just_started"
+
+        println("\n IN onRestart status is: $status")
+
     }
 
     override fun onResume() {
         super.onResume()
 
+        status = if (intent.getStringExtra("status") != null) ({
+        }).toString() else "just_started"
 
+        println("\n IN onResume status is: $status")
 
     }
 

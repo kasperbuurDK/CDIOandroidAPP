@@ -39,30 +39,31 @@ class TakePhotoActivity : AppCompatActivity() {
             startCamera()
         } else {
             ActivityCompat.requestPermissions(
-                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
+                this, MainActivity.REQUIRED_PERMISSIONS, MainActivity.REQUEST_CODE_PERMISSIONS)
         }
 
         // Set up the listener for take photo button
 
         take_photo_button.setOnClickListener { takePhotoGoToValidate() }
-        toValidateButton.setOnClickListener { switchToResponseActivity() }
+        to_menu_button.setOnClickListener { backToMenu() }
 
         //inform user of status
         var ourToastMessage = ""
 
-        status = intent.getStringExtra("status").toString()
+                status = if (intent.getStringExtra("status") != null) ({
+        }).toString() else "Ready to take first photo"
 
-        when (status) {
-            "resumed" -> {
-                ourToastMessage = "Just resumed with no statusIntent"
+            when (status) {
+                "resumed" -> {
+                    ourToastMessage = "Just resumed with no statusIntent"
+                }
+                "nextMove" -> {
+                    ourToastMessage = "Ready for next photo"
+                }
+                "no statusIntent" -> {
+                    ourToastMessage = "no status"
+                }
             }
-            "nextMove" -> {
-                ourToastMessage = "Ready for next photo"
-            }
-            "no statusIntent" -> {
-                ourToastMessage = "no status"
-            }
-        }
 
         Toast.makeText(this, ourToastMessage , Toast.LENGTH_SHORT).show()
 
@@ -72,6 +73,12 @@ class TakePhotoActivity : AppCompatActivity() {
         cameraExecutor = Executors.newSingleThreadExecutor()
 
 
+    }
+
+    private fun backToMenu() {
+        intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("status", "fromTakePhoto")
+        startActivity(intent)
     }
 
     override fun onRestart() {
@@ -125,14 +132,14 @@ class TakePhotoActivity : AppCompatActivity() {
             ContextCompat.getMainExecutor(this),     //what executor to use
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
-                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                    Log.e(MainActivity.TAG, "Photo capture failed: ${exc.message}", exc)
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     savedUri = Uri.fromFile(photoFile).toString()
                     val msg = "Photo capture succeeded: $savedUri"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, msg)
+                    Log.d(MainActivity.TAG, msg)
 
                     /*
                     val thread = SendImage(outputDirectory)
@@ -188,13 +195,13 @@ class TakePhotoActivity : AppCompatActivity() {
                     this, cameraSelector, preview, imageCapture)
 
             } catch(exc: Exception) {
-                Log.e(TAG, "Use case binding failed", exc)
+                Log.e(MainActivity.TAG, "Use case binding failed", exc)
             }
 
         }, ContextCompat.getMainExecutor(this))
     }
 
-    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
+    private fun allPermissionsGranted() = MainActivity.REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
             baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
@@ -206,19 +213,13 @@ class TakePhotoActivity : AppCompatActivity() {
             mediaDir else filesDir
     }
 
-    companion object {
-        private const val TAG = "CameraXBasic"
-        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
-        private const val REQUEST_CODE_PERMISSIONS = 10
-        private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 
-    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults:
         IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+        if (requestCode == MainActivity.REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
                 startCamera()
             } else {

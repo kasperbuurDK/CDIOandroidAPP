@@ -13,9 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="131dp"
         android:layout_marginTop="190dp"
-        android:layout_marginBottom="173dp"
-        android:text="Button"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/go_to_game"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,13 +21,10 @@
         android:id="@+id/startNewGame_Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="188dp"
         android:layout_marginEnd="141dp"
-        android:layout_marginBottom="175dp"
-        android:text="Button"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/start_new_game"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/toTakePhoto_Button" />
 
     <TextView
         android:id="@+id/textView"
@@ -38,7 +33,7 @@
         android:layout_marginStart="322dp"
         android:layout_marginTop="93dp"
         android:layout_marginEnd="352dp"
-        android:text="TextView"
+        android:text="@string/textview"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
