@@ -9,7 +9,6 @@ import android.os.Looper
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import coil.Coil
 import coil.load
 import kotlinx.android.synthetic.main.activity_response2.*
 import java.io.BufferedReader
@@ -39,8 +38,7 @@ class ResponseActivity2 : AppCompatActivity() {
         progressBar.visibility = View.GONE
 
         imagePath = intent.getStringExtra("imagePath").toString()
-
-
+        println("IMAGEPATH ======== $imagePath")
 
     }
 

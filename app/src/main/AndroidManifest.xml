@@ -4,7 +4,7 @@
 
     <uses-feature android:name="android.hardware.camera.any" /> <!-- permission for camera -->
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- permission for internet -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -17,14 +17,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CameraXAPP"
         android:usesCleartextTraffic="true">
+        <activity android:name=".TakePhotoActivity"></activity>
         <activity
             android:name=".ValidateActivity"
             android:configChanges="orientation"
             android:screenOrientation="landscape" />
-        <activity android:name=".ResponseActivity2"
+        <activity
+            android:name=".ResponseActivity2"
             android:configChanges="orientation"
-            android:screenOrientation="landscape"/>
-        <activity android:name=".MainActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".MainActivity"
             android:configChanges="orientation"
             android:screenOrientation="landscape">
             <intent-filter>
@@ -36,6 +39,5 @@
     </application>
 
 </manifest>
-
 
 

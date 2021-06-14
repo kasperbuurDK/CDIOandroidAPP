@@ -13,8 +13,6 @@
         android:layout_marginBottom="140dp"
         android:contentDescription="@string/response_image"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
@@ -52,6 +50,7 @@
         android:text="@string/testbutton"
         app:layout_constraintBottom_toTopOf="@+id/declineButton"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.478"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ProgressBar
