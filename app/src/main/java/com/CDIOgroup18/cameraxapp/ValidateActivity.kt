@@ -37,7 +37,7 @@ class ValidateActivity : AppCompatActivity() {
 
 
         undoButton.setOnClickListener {
-            intent = Intent(this, MainActivity::class.java)
+            intent = Intent(this, TakePhotoActivity::class.java)
             startActivity(intent)
         }
         goButton.setOnClickListener {
