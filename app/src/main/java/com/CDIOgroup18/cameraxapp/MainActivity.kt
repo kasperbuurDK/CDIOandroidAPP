@@ -162,18 +162,25 @@ class MainActivity : AppCompatActivity() {
         ourMessage = "Please wait contacting server....\n " +
                 "Obtaning game ID"
 
+        var backFromServer = 0
+
         try {
             val thread = StartMessageToServer()
             thread.start()
-
-            ourMessage = "Your game ID is: $myGameID"
+            backFromServer = 1
 
         } catch (e: Exception) {
             e.printStackTrace()
-            ourMessage = "Failed to acquire ID from server"
-
+            backFromServer = 2
         }
+
         println("IS RUN DONE?")
+
+        while (backFromServer == 0)
+
+            ourMessage = if (backFromServer == 1) "Your game ID is: $myGameID"
+            else if (backFromServer == 2) "Failed to acquire ID from server"
+            else "Could not determine server respons "
 
         updateUserView()
     }
