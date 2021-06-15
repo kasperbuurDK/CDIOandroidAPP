@@ -17,5 +17,6 @@
     <string name="go_to_game">Go to Game</string>
     <string name="start_new_game">Start New Game</string>
     <string name="to_menu">To Menu</string>
+    <string name="to_active_game">To Active Game </string>
 
 </resources>

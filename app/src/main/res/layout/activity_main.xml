@@ -8,12 +8,12 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/toTakePhoto_Button"
+        android:id="@+id/activeGame_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="131dp"
+        android:layout_marginStart="141dp"
         android:layout_marginTop="190dp"
-        android:text="@string/go_to_game"
+        android:text="@string/to_active_game"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,7 +24,7 @@
         android:layout_marginEnd="141dp"
         android:text="@string/start_new_game"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/toTakePhoto_Button" />
+        app:layout_constraintTop_toTopOf="@+id/activeGame_button" />
 
     <TextView
         android:id="@+id/textView"
@@ -37,4 +37,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progressBar2"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="154dp"
+        android:layout_height="143dp"
+        app:layout_constraintBottom_toBottomOf="@+id/activeGame_button"
+        app:layout_constraintEnd_toStartOf="@+id/startNewGame_Button"
+        app:layout_constraintStart_toEndOf="@+id/activeGame_button"
+        app:layout_constraintTop_toTopOf="@+id/activeGame_button" />
+
+    <Button
+        android:id="@+id/requestID_Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Get ID from server"
+        app:layout_constraintEnd_toEndOf="@+id/progressBar2"
+        app:layout_constraintStart_toStartOf="@+id/progressBar2"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar2" />
 </androidx.constraintlayout.widget.ConstraintLayout>
