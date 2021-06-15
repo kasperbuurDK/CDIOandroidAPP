@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
-import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity() {
 
@@ -59,9 +58,16 @@ class MainActivity : AppCompatActivity() {
         activeGame_button.setOnClickListener { goToTakePhoto() }
         startNewGame_Button.setOnClickListener { startNewGameAtServer() }
         requestID_Button.setOnClickListener { getIDfromServer() }
+        dev_button_1_toTakePhoto.setOnClickListener { goToTakePhoto() }
+        dev_button_2_toValidate.setOnClickListener { goToValidate()}
 
         updateUserView()
 
+    }
+
+    private fun goToValidate() {
+        intent = Intent(this, ValidateActivity::class.java)
+        startActivity(intent)
     }
 
     private fun updateUserView() {
@@ -156,18 +162,25 @@ class MainActivity : AppCompatActivity() {
         ourMessage = "Please wait contacting server....\n " +
                 "Obtaning game ID"
 
+        var backFromServer = 0
+
         try {
             val thread = StartMessageToServer()
             thread.start()
-
-            ourMessage = "Your game ID is: $myGameID"
+            backFromServer = 1
 
         } catch (e: Exception) {
             e.printStackTrace()
-            ourMessage = "Failed to acquire ID from server"
-
+            backFromServer = 2
         }
+
         println("IS RUN DONE?")
+
+        while (backFromServer == 0)
+
+            ourMessage = if (backFromServer == 1) "Your game ID is: $myGameID"
+            else if (backFromServer == 2) "Failed to acquire ID from server"
+            else "Could not determine server respons "
 
         updateUserView()
     }

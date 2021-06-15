@@ -18,5 +18,8 @@
     <string name="start_new_game">Start New Game</string>
     <string name="to_menu">To Menu</string>
     <string name="to_active_game">To Active Game </string>
+    <string name="get_id_from_server">Get ID from server</string>
+    <string name="to_take_photo">To take photo</string>
+    <string name="to_validate">To validate</string>
 
 </resources>

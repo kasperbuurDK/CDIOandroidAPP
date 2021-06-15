@@ -15,7 +15,8 @@
         app:layout_constraintBottom_toTopOf="@+id/take_photo_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+                >
 
     </androidx.camera.view.PreviewView>
 
@@ -39,5 +40,57 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <View
+        android:id="@+id/fromLeft1"
+        android:layout_width="3dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:background="@color/purple_200"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <View
+        android:id="@+id/fromLeft2"
+        android:layout_width="3dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:background="@color/purple_200"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/fromLeft3"
+        android:layout_width="3dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:background="@color/purple_200"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/fromLeft4"
+        android:layout_width="3dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:background="@color/purple_200"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/fromLeft5"
+        android:layout_width="3dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:background="@color/purple_200"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/fromLeft6"
+        android:layout_width="3dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:background="@color/purple_200"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
