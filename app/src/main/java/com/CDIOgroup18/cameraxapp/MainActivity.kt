@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
-import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity() {
 
@@ -59,9 +58,16 @@ class MainActivity : AppCompatActivity() {
         activeGame_button.setOnClickListener { goToTakePhoto() }
         startNewGame_Button.setOnClickListener { startNewGameAtServer() }
         requestID_Button.setOnClickListener { getIDfromServer() }
+        dev_button_1_toTakePhoto.setOnClickListener { goToTakePhoto() }
+        dev_button_2_toValidate.setOnClickListener { goToValidate()}
 
         updateUserView()
 
+    }
+
+    private fun goToValidate() {
+        intent = Intent(this, ValidateActivity::class.java)
+        startActivity(intent)
     }
 
     private fun updateUserView() {

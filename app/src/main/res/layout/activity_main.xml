@@ -53,8 +53,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Get ID from server"
+        android:text="@string/get_id_from_server"
         app:layout_constraintEnd_toEndOf="@+id/progressBar2"
         app:layout_constraintStart_toStartOf="@+id/progressBar2"
         app:layout_constraintTop_toBottomOf="@+id/progressBar2" />
+
+    <Button
+        android:id="@+id/dev_button_1_toTakePhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="@string/to_take_photo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/dev_button_2_toValidate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/to_validate"
+        app:layout_constraintStart_toStartOf="@+id/dev_button_1_toTakePhoto"
+        app:layout_constraintTop_toBottomOf="@+id/dev_button_1_toTakePhoto" />
 </androidx.constraintlayout.widget.ConstraintLayout>
