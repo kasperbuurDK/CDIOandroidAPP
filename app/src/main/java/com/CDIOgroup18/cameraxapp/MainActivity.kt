@@ -6,10 +6,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
+import kotlin.properties.Delegates
+
 class MainActivity : AppCompatActivity() {
 
     companion object {
@@ -17,88 +20,104 @@ class MainActivity : AppCompatActivity() {
         const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         const val REQUEST_CODE_PERMISSIONS = 10
         val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
-        var myGameID: Int = -1
-
+        var myGameID : Int? = -1
     }
 
-    var bgThread: Executor =
+    private var bgThread: Executor =
         Executors.newSingleThreadExecutor() // handle for backgroundThread (network com)
-    var uiThread = Handler(Looper.getMainLooper()) // handle for activity
+    private var uiThread = Handler(Looper.getMainLooper()) // handle for activity
 
 
     private var status: String? = null
+    var ourMessage = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        progressBar2.visibility = View.GONE
 
-        //inform user of status
-        var ourMessage = ""
-
-        if (intent.getStringExtra("status") != null) {
-            status = intent.getStringExtra("status")
+        status = if (intent.getStringExtra("status") != null) {
+            intent.getStringExtra("status")
         } else {
-            status = "just_started"
+            "just_started"
         }
 
-        println("\n IN onCreate status is: $status")
-
-        when (status) {
+        ourMessage = when (status) {
             "just_started" -> {
-
-                textView.text = "Please wait contacting server....\n " +
-                        "Obtaning game ID"
-
-                bgThread.execute(Runnable {
-                    try {
-                        val thread = StartMessageToServer()
-                        thread.start()
-
-                        uiThread.post(Runnable {
-                            ourMessage = "Welcome to SmartSolitareSolver\n " +
-                                    "Please make your choice\n " +
-                                    "And remember to enjoy\n " +
-                                    "Your game ID is: $myGameID"
-
-                            textView.text = ourMessage
-
-                        })
-
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        uiThread.post(Runnable {
-
-                        })
-                    }
-                })
-
+                "Welcome to SmartSolitareSolver\n" +
+                        "Enjoy the game"
             }
             "fromTakePhoto" -> {
-                ourMessage = "Returned from TakePhoto\n " +
-                        "Your gameID is still ${MainActivity.myGameID}"
-                textView.text = ourMessage
+                "Returned from TakePhoto\n " +
+                        "Your gameID is still $myGameID"
             }
             else -> {
-                ourMessage = "Something is wrong"
-                textView.text = ourMessage
-
+                "No known status"
             }
         }
 
-        toTakePhoto_Button.setOnClickListener{ goToTakePhoto()}
-        startNewGame_Button.setOnClickListener{ restartToServer()}
+        activeGame_button.setOnClickListener { goToTakePhoto() }
+        startNewGame_Button.setOnClickListener { startNewGameAtServer() }
+        requestID_Button.setOnClickListener { getIDfromServer() }
+
+        updateUserView()
 
     }
 
-    private fun restartToServer() {
-        val thread = RestartToSetverClass()
-        thread.start()
+    private fun updateUserView() {
+        val needGameID = "Need ID to use"
+
+        textView.text = ourMessage
+
+        if (myGameID == -1) {
+            activeGame_button.isEnabled = false
+            startNewGame_Button.isEnabled = false
+            activeGame_button.text = needGameID
+            startNewGame_Button.text = needGameID
+
+        } else {
+            activeGame_button.isEnabled = true
+            startNewGame_Button.isEnabled = true
+            activeGame_button.text = "To active game"
+            startNewGame_Button.text = "Start new game"
+        }
+
+
     }
+
+    private fun startNewGameAtServer() {
+
+        progressBar2.visibility = View.VISIBLE
+        textView.text = "Contacting server to start new game"
+
+        if (myGameID != -1) {
+            bgThread.execute(Runnable {
+                try {
+                    val thread = RestartToServerClass()
+                    thread.start()
+
+                    uiThread.post(Runnable {
+                        progressBar2.visibility = View.GONE
+                        textView.text = "Game reset at at server"
+
+                    })
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    textView.text = "Failed to restart game at server"
+                    progressBar2.visibility = View.GONE
+                }
+            })
+        }
+
+        updateUserView()
+
+    }
+
 
     private fun goToTakePhoto() {
         intent = Intent(this, TakePhotoActivity::class.java)
         startActivity(intent)
-       }
+    }
 
     override fun onRestart() {
         super.onRestart()
@@ -107,6 +126,7 @@ class MainActivity : AppCompatActivity() {
         }).toString() else "just_started"
 
         println("\n IN onRestart status is: $status")
+        updateUserView()
 
     }
 
@@ -118,10 +138,12 @@ class MainActivity : AppCompatActivity() {
 
         println("\n IN onResume status is: $status")
 
+        updateUserView()
     }
 
     override fun onPause() {
         super.onPause()
+
     }
 
     override fun onDestroy() {
@@ -129,6 +151,24 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    fun getIDfromServer() {
 
+        ourMessage = "Please wait contacting server....\n " +
+                "Obtaning game ID"
 
+        try {
+            val thread = StartMessageToServer()
+            thread.start()
+
+            ourMessage = "Your game ID is: $myGameID"
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ourMessage = "Failed to acquire ID from server"
+
+        }
+        println("IS RUN DONE?")
+
+        updateUserView()
+    }
 }
