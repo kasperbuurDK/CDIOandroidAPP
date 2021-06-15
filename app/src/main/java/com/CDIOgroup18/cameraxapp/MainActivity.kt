@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
+import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity() {
         const val REQUEST_CODE_PERMISSIONS = 10
         val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
         var myGameID : Int? = -1
+        var validID by Delegates.notNull<Boolean>()
     }
 
     private var bgThread: Executor =
@@ -34,6 +36,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         progressBar2.visibility = View.GONE
+
+        validID = myGameID != -1
 
         status = if (intent.getStringExtra("status") != null) {
             intent.getStringExtra("status")
@@ -75,7 +79,7 @@ class MainActivity : AppCompatActivity() {
 
         textView.text = ourMessage
 
-        if (myGameID == -1) {
+        if (!validID) {
             activeGame_button.isEnabled = false
             startNewGame_Button.isEnabled = false
             activeGame_button.text = needGameID
@@ -162,25 +166,22 @@ class MainActivity : AppCompatActivity() {
         ourMessage = "Please wait contacting server....\n " +
                 "Obtaning game ID"
 
-        var backFromServer = 0
-
         try {
             val thread = StartMessageToServer()
             thread.start()
-            backFromServer = 1
+            ourMessage = "Got ID from server"
+            validID = true
 
         } catch (e: Exception) {
             e.printStackTrace()
-            backFromServer = 2
+            ourMessage = "Failed to get ID from server"
+            validID = false
+
         }
 
         println("IS RUN DONE?")
 
-        while (backFromServer == 0)
 
-            ourMessage = if (backFromServer == 1) "Your game ID is: $myGameID"
-            else if (backFromServer == 2) "Failed to acquire ID from server"
-            else "Could not determine server respons "
 
         updateUserView()
     }

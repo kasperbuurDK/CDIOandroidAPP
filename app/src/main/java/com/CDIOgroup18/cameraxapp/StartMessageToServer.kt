@@ -21,7 +21,7 @@ class StartMessageToServer : Thread() {
             }
 
             println("hey"+response.body!!.string())
-            MainActivity.myGameID = response.headers["gameID"]?.toInt() ?: -1
+            MainActivity.myGameID = response.headers["gameID"]?.toInt() ?: -2
 
 
 
