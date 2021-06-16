@@ -3,13 +3,18 @@ package com.CDIOgroup18.cameraxapp
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.widget.Button
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowInsets
+import android.view.WindowManager
 import android.widget.ProgressBar
+import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import coil.load
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_response2.*
@@ -41,6 +46,17 @@ class ValidateActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //test
+        @Suppress("DEPRECATION")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.hide(WindowInsets.Type.statusBars())
+        } else {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        }
+
         setContentView(R.layout.activity_validate)
 
         answerOK = false
@@ -61,15 +77,36 @@ class ValidateActivity : AppCompatActivity() {
 
             outputDirectory = getOutputDirectory()
 
+            /*
             val layout: ConstraintLayout = findViewById(R.id.validateLayout)
             val progressBar =
                 ProgressBar(this@ValidateActivity, null, android.R.attr.progressBarStyleLarge)
             val params = ConstraintLayout.LayoutParams(100, 100)
-            //params.addRule(ConstraintLayout.CENTER_IN_PARENT)
-            layout.addView(progressBar, params)
+            */
 
-            buttonDisable(goButton)
-            buttonDisable(undoButton)
+           /* val layout: RelativeLayout = findViewById(R.id.ValiRelaLayout)
+
+            var proBar =
+                ProgressBar(this@ValidateActivity, null, android.R.attr.progressBarStyleLarge)
+            val params = RelativeLayout.LayoutParams(100, 100)
+            params.addRule(RelativeLayout.CENTER_IN_PARENT)
+
+            layout.addView(proBar, params)
+/*
+
+
+            */
+            */
+
+            val proLayout : ConstraintLayout = findViewById(R.id.progressLayout)
+            proLayout.isVisible = true
+
+
+            goButton.isEnabled = false
+            undoButton.isEnabled = false
+
+            //goButton.isClickable = false
+            //undoButton.isClickable = false
 
             //handler is for test purposes, should be deleted
             Handler().postDelayed(
@@ -117,9 +154,9 @@ class ValidateActivity : AppCompatActivity() {
                 3000 // value in milliseconds
             )//end of handler
 
-                    layout.removeView(progressBar)
-            buttonEnable(goButton)
-            buttonEnable(undoButton)
+              //      layout.removeView(progressBar)
+            //buttonEnable(goButton)
+            //buttonEnable(undoButton)
         }
 
     }
@@ -192,15 +229,5 @@ class ValidateActivity : AppCompatActivity() {
         private val MEDIA_TYPE_JPG = "image/jpeg".toMediaType()
     }
 
-    private fun buttonDisable(button: Button) {
-        button?.isEnabled = false
-        //button?.setTextColor(ContextCompat.getColor(textView.context, R.color.white))
-       // button?.setBackgroundColor(ContextCompat.getColor(textView.context, R.color.grey))
-    }
 
-    private fun buttonEnable(button: Button) {
-        button?.isEnabled = true
-        //button?.setTextColor(ContextCompat.getColor(textView.context, R.color.white))
-        //button?.setBackgroundColor(ContextCompat.getColor(textView.context, R.color.darkblue))
-    }
 }
