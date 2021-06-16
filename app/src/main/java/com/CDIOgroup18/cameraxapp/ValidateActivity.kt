@@ -97,7 +97,7 @@ class ValidateActivity : AppCompatActivity() {
                                 if (response.body!!.string() == "We uploaded the file!") {
 
 
-                                    //goToResponse()
+                                    goToResponse()
                                 } else {
                                     //error message for the user
                                     runOnUiThread {
