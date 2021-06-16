@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
-import kotlin.concurrent.thread
 import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity() {
@@ -24,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         const val REQUEST_CODE_PERMISSIONS = 10
         val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
         var myGameID = -1
-        var validID by Delegates.notNull<Boolean>()
+        var validID = false
     }
 
     private var bgThread: Executor =
@@ -36,48 +35,51 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var ourSharedPref: SharedPreferences
 
-    private var handler : Handler = Handler(Looper.myLooper()!!)
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         this.supportActionBar?.hide();
         progressBar2.visibility = View.GONE
 
+        bgThread.execute(Runnable {
+            ourSharedPref = this.getPreferences(Context.MODE_PRIVATE)
 
-        ourSharedPref = this.getPreferences(Context.MODE_PRIVATE)
+            myGameID = ourSharedPref.getInt("gameID", -1)
 
-        myGameID  = ourSharedPref.getInt("gameID", -1)
+            validID = myGameID != -1 //if mygameID not -1 then validID is true
 
-        validID = myGameID != -1 //if mygameID not -1 then validID is true
+            status = if (intent.getStringExtra("status") != null) {
+                intent.getStringExtra("status")
+            } else {
+                "just_started"
+            }
 
-        status = if (intent.getStringExtra("status") != null) {
-            intent.getStringExtra("status")
-        } else {
-            "just_started"
+            ourMessage = when (status) {
+                "just_started" -> {
+                    "Welcome to SmartSolitareSolver\n" +
+                            "Enjoy the game"
+                }
+                "fromTakePhoto" -> {
+                    "Returned from TakePhoto\n " +
+                            "Your gameID is still $myGameID"
+                }
+                else -> {
+                    "No known status"
+                }
+            }
+
         }
 
-        ourMessage = when (status) {
-            "just_started" -> {
-                "Welcome to SmartSolitareSolver\n" +
-                        "Enjoy the game"
-            }
-            "fromTakePhoto" -> {
-                "Returned from TakePhoto\n " +
-                        "Your gameID is still $myGameID"
-            }
-            else -> {
-                "No known status"
-            }
-        }
+        )
+
+
 
         activeGame_button.setOnClickListener { goToTakePhoto() }
         startNewGame_Button.setOnClickListener { startNewGameAtServer() }
         requestID_Button.setOnClickListener { getIDfromServer() }
         dev_button_1_toTakePhoto.setOnClickListener { goToTakePhoto() }
-        dev_button_2_toValidate.setOnClickListener { goToValidate()}
-        endAtServer_button.setOnClickListener { deleteAccountAtServer()}
+        dev_button_2_toValidate.setOnClickListener { goToValidate() }
+        endAtServer_button.setOnClickListener { deleteAccountAtServer() }
 
 
         updateUserView()
@@ -88,28 +90,27 @@ class MainActivity : AppCompatActivity() {
         progressBar2.visibility = View.VISIBLE
         textView.text = "Contacting server to delete account"
 
-        if (myGameID != -1) {
-            bgThread.execute(Runnable {
-                try {
-                    val thread = EndAtServerClass()
-                    thread.start()
+        bgThread.execute(Runnable {
+            try {
+                val thread = EndAtServerClass()
+                thread.start()
 
-                    uiThread.post(Runnable {
-                        progressBar2.visibility = View.GONE
-                        ourMessage = "Game reset at at server"
-                        textView.text = "Game reset at at server"
-                        myGameID = -1
-                        validID = false
-
-                    })
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    ourMessage = "Failed to restart game at server"
-                    textView.text = "Failed to restart game at server"
+                uiThread.post(Runnable {
                     progressBar2.visibility = View.GONE
-                }
-            })
-        }
+                    ourMessage = "Game reset at at server"
+                    textView.text = "Game reset at at server"
+                    myGameID = -1
+                    validID = false
+
+                })
+            } catch (e: Exception) {
+                e.printStackTrace()
+                ourMessage = "Failed to restart game at server"
+                textView.text = "Failed to restart game at server"
+                progressBar2.visibility = View.GONE
+            }
+        })
+
 
         updateUserView()
     }
@@ -128,7 +129,7 @@ class MainActivity : AppCompatActivity() {
 
         activeGame_button.isEnabled = validID
         startNewGame_Button.isEnabled = validID
-        requestID_Button.isEnabled =  !validID
+        requestID_Button.isEnabled = !validID
         endAtServer_button.isEnabled = validID
 
 
@@ -235,8 +236,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         println("IS RUN DONE?")
-
-
 
         updateUserView()
     }

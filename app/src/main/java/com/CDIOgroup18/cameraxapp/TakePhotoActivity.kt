@@ -6,6 +6,7 @@ import android.content.res.Resources
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.util.Size
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -98,8 +99,6 @@ class TakePhotoActivity : AppCompatActivity() {
 
         viewFinder.layoutParams = paramVF
 
-
-
         val noOfFields = 7
         val distanceBetweenLines = (viewFinderWidth/noOfFields)
 
@@ -139,9 +138,6 @@ class TakePhotoActivity : AppCompatActivity() {
         fromLeft4.layoutParams = param4
         fromLeft5.layoutParams = param5
         fromLeft6.layoutParams = param6
-
-
-
     }
 
     private fun backToMenu() {
@@ -230,7 +226,8 @@ class TakePhotoActivity : AppCompatActivity() {
 
             imageCapture = ImageCapture.Builder().
             setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).
-            setTargetAspectRatio(aspect).
+           // setTargetAspectRatio(aspect).
+                setTargetResolution(Size(1600, 1200)).
             build()
 
             // Select back camera as a default
