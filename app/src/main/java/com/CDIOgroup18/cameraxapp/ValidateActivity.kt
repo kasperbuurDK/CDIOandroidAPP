@@ -55,6 +55,7 @@ class ValidateActivity : AppCompatActivity() {
         goButton.setOnClickListener {
             println("TRY SEND TO SERVER")
 
+            println("ID"+MainActivity.myGameID)
 
 
             outputDirectory = getOutputDirectory()
@@ -83,7 +84,7 @@ class ValidateActivity : AppCompatActivity() {
                             .build()
 
                         val request = Request.Builder()
-                            .url("http://130.225.170.93:9001/api/v1/upload")
+                            .url("http://130.225.170.93:9001/api/v1/upload/${MainActivity.myGameID}")
                             .post(requestBody)
                             .build()
 
@@ -91,8 +92,9 @@ class ValidateActivity : AppCompatActivity() {
 
                         client.newCall(request).execute().use { response ->
                             if (response.isSuccessful) {
-                                //println("successful POST"+response.body!!.string())
-                                if (response.body!!.string() == "We uploaded the file!") {
+                                println("successful POST"+response.body!!.string())
+                                //if (response.body!!.string() == "We uploaded the file!") {
+                                  if (true){
                                     goToResponse()
                                 } else {
                                     //error message for the user
@@ -109,9 +111,7 @@ class ValidateActivity : AppCompatActivity() {
                 3000 // value in milliseconds
             )//end of handler
 
-            //ProgressBar.setVisibility(View.INVISIBLE)
-
-            layout.removeView(progressBar)
+                    layout.removeView(progressBar)
             buttonEnable(goButton)
             buttonEnable(undoButton)
         }
@@ -133,10 +133,6 @@ class ValidateActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
     }
-
-    /*private fun setAnswer(value:Boolean){
-        answerOK = value;
-    }*/
 
     private fun getOutputDirectory(): File {
         val mediaDir = externalMediaDirs.firstOrNull()?.let {
@@ -193,12 +189,12 @@ class ValidateActivity : AppCompatActivity() {
     private fun buttonDisable(button: Button) {
         button?.isEnabled = false
         //button?.setTextColor(ContextCompat.getColor(textView.context, R.color.white))
-        button?.setBackgroundColor(ContextCompat.getColor(textView.context, R.color.grey))
+       // button?.setBackgroundColor(ContextCompat.getColor(textView.context, R.color.grey))
     }
 
     private fun buttonEnable(button: Button) {
         button?.isEnabled = true
         //button?.setTextColor(ContextCompat.getColor(textView.context, R.color.white))
-        button?.setBackgroundColor(ContextCompat.getColor(textView.context, R.color.darkblue))
+        //button?.setBackgroundColor(ContextCompat.getColor(textView.context, R.color.darkblue))
     }
 }
