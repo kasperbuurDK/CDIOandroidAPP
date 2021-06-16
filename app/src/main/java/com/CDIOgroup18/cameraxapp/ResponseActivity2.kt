@@ -1,27 +1,78 @@
 package com.CDIOgroup18.cameraxapp
 
+
 import android.content.Intent
-import android.media.Image
-import android.media.ImageReader
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import coil.load
 import kotlinx.android.synthetic.main.activity_response2.*
-import java.io.BufferedReader
-import java.io.File
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.io.IOException
-import java.io.InputStreamReader
-import java.net.URL
-import java.util.concurrent.Executor
-import java.util.concurrent.Executors
+import java.io.InputStream
+
 
 class ResponseActivity2 : AppCompatActivity() {
 
-    var bgThread: Executor =
+    private val client = OkHttpClient()
+
+    private lateinit var bitmap: Bitmap
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_response2)
+
+
+        newMoveButton.setOnClickListener {
+            intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+
+        Thread {
+            val request = Request.Builder()
+                .url("http://130.225.170.93:9001/api/v1/download/${MainActivity.myGameID}")
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) throw IOException("Unexpected code $response")
+
+                val inputStream: InputStream = response.body!!.byteStream()
+                bitmap = BitmapFactory.decodeStream(inputStream)
+
+                //println(response.body!!.string())
+
+                //uncomment next line
+
+                // cardMoveImg.setImageBitmap(bitmap)
+                //imageTakenView.load()
+                //val mImg: ImageView
+                //mImg = findViewById<View>(R.id.imageView2) as ImageView
+                //mImg.setImageBitmap(bmOut)
+                runOnUiThread {
+                    cardMoveImg.setImageBitmap(bitmap)
+                }
+            }
+
+        }.start()
+
+
+
+
+    }
+
+}
+
+
+
+
+
+
+
+
+///////////
+
+/* var bgThread: Executor =
         Executors.newSingleThreadExecutor() // handle for backgroundThread (network com)
     var uiThread = Handler(Looper.getMainLooper()) // handle for activity
 
@@ -129,7 +180,7 @@ class ResponseActivity2 : AppCompatActivity() {
             sb.append(
                 """
                 $linje
-                
+
                 """.trimIndent()
             )
             linje = br.readLine()
@@ -139,8 +190,4 @@ class ResponseActivity2 : AppCompatActivity() {
         return sb.toString()
     }
 
-
-
-
-}
-
+*/

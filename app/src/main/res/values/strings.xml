@@ -21,5 +21,6 @@
     <string name="get_id_from_server">Get ID from server</string>
     <string name="to_take_photo">To take photo</string>
     <string name="to_validate">To validate</string>
+    <string name="new_move">New move</string>
 
 </resources>
