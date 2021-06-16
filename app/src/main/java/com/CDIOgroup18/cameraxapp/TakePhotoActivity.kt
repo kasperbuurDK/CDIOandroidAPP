@@ -83,13 +83,20 @@ class TakePhotoActivity : AppCompatActivity() {
           height = it.measuredHeight
         }
 
-        var distanceBetweenLines = width/noOfVerticalLines
+        var distanceBetweenLines = (width/noOfVerticalLines) + 2000
 
-        val param = fromLeft1.layoutParams as ViewGroup.MarginLayoutParams
-        param.setMargins(distanceBetweenLines,10,10,10)
-        fromLeft1.layoutParams = param
+        println("DEBUG __--__--__--  distanceBetweenLines = $distanceBetweenLines \n" +
+                "width = $width \n " +
+                "height = $height")
+
+        var param = fromLeft1.layoutParams as ViewGroup.MarginLayoutParams
+        param.leftMargin = distanceBetweenLines
 
         fromLeft1.setBackgroundColor(Color.BLUE)
+
+        fromLeft1.layoutParams = param
+
+
 
     }
 
