@@ -12,6 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import coil.load
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_response2.*
 import kotlinx.android.synthetic.main.activity_validate.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -92,17 +93,22 @@ class ValidateActivity : AppCompatActivity() {
 
                         client.newCall(request).execute().use { response ->
                             if (response.isSuccessful) {
-                                println("successful POST"+response.body!!.string())
-                                //if (response.body!!.string() == "We uploaded the file!") {
-                                  if (true){
-                                    goToResponse()
+                                //println("successful POST"+response.body!!.string())
+                                if (response.body!!.string() == "We uploaded the file!") {
+
+
+                                    //goToResponse()
                                 } else {
                                     //error message for the user
-                                    alDialog("server no good")
+                                    runOnUiThread {
+                                        alDialog("server no good")
+                                    }
                                 }
                             }
                             else {  //not sucessful
-                                alDialog("commnunication no good")
+                                runOnUiThread {
+                                    alDialog("commnunication no good")
+                                }
                             }
                         }
                     }.start()
