@@ -22,5 +22,6 @@
     <string name="to_take_photo">To take photo</string>
     <string name="to_validate">To validate</string>
     <string name="new_move">New move</string>
+    <string name="delete_user_at_server">Delete user at server</string>
 
 </resources>

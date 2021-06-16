@@ -3,12 +3,9 @@ package com.CDIOgroup18.cameraxapp
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.util.Log
-import android.util.Size
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,11 +16,11 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.doOnLayout
 import kotlinx.android.synthetic.main.activity_take_photo.*
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.math.roundToInt
 
 
 class TakePhotoActivity : AppCompatActivity() {
@@ -33,10 +30,13 @@ class TakePhotoActivity : AppCompatActivity() {
     private var savedUri: String? = null
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
+    val aspect = 16/12
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_take_photo)
+        this.supportActionBar?.hide();
+
 
         // Request camera permissions
         if (allPermissionsGranted()) {
@@ -81,29 +81,57 @@ class TakePhotoActivity : AppCompatActivity() {
     }
 
     private fun drawVerticalLines() {
-        val screeWidth = Resources.getSystem().displayMetrics.widthPixels
-        //val screeHeight = Resources.getSystem().displayMetrics.heightPixels
+        val screenWidth = Resources.getSystem().displayMetrics.widthPixels
+        val screeHeight = Resources.getSystem().displayMetrics.heightPixels
+
+        val paramVF = viewFinder.layoutParams as ViewGroup.MarginLayoutParams
+
+        val startX = (screenWidth*0.1).roundToInt()
+        val startY = (screeHeight*0.0025).roundToInt()
+        val viewFinderWidth = (screenWidth*0.8).roundToInt()
+        val viewFinderHeight = (screeHeight*0.8).roundToInt()
+
+        paramVF.leftMargin = startX
+        paramVF.topMargin = startY
+        paramVF.height = viewFinderHeight
+        paramVF.width = viewFinderWidth
+
+        viewFinder.layoutParams = paramVF
+
+
 
         val noOfFields = 7
-        val distanceBetweenLines = (screeWidth/noOfFields)
+        val distanceBetweenLines = (viewFinderWidth/noOfFields)
 
         val param1 = fromLeft1.layoutParams as ViewGroup.MarginLayoutParams
-        param1.marginStart = distanceBetweenLines*1
+        param1.marginStart = startX + distanceBetweenLines*1
+        param1.topMargin = startY
+        param1.height = viewFinderHeight
 
         val param2 = fromLeft2.layoutParams as ViewGroup.MarginLayoutParams
-        param2.marginStart = distanceBetweenLines*2
+        param2.marginStart = startX + distanceBetweenLines*2
+        param2.topMargin = startY
+        param2.height = viewFinderHeight
 
         val param3 = fromLeft3.layoutParams as ViewGroup.MarginLayoutParams
-        param3.marginStart = distanceBetweenLines*3
+        param3.marginStart = startX + distanceBetweenLines*3
+        param3.topMargin = startY
+        param3.height = viewFinderHeight
 
         val param4 = fromLeft4.layoutParams as ViewGroup.MarginLayoutParams
-        param4.marginStart = distanceBetweenLines*4
+        param4.marginStart = startX + distanceBetweenLines*4
+        param4.topMargin = startY
+        param4.height = viewFinderHeight
 
         val param5 = fromLeft5.layoutParams as ViewGroup.MarginLayoutParams
-        param5.marginStart = distanceBetweenLines*5
+        param5.marginStart = startX + distanceBetweenLines*5
+        param5.topMargin = startY
+        param5.height = viewFinderHeight
 
         val param6 = fromLeft6.layoutParams as ViewGroup.MarginLayoutParams
-        param6.marginStart = distanceBetweenLines*6
+        param6.marginStart = startX + distanceBetweenLines*6
+        param6.topMargin = startY
+        param6.height = viewFinderHeight
 
         fromLeft1.layoutParams = param1
         fromLeft2.layoutParams = param2
@@ -111,6 +139,9 @@ class TakePhotoActivity : AppCompatActivity() {
         fromLeft4.layoutParams = param4
         fromLeft5.layoutParams = param5
         fromLeft6.layoutParams = param6
+
+
+
     }
 
     private fun backToMenu() {
@@ -199,7 +230,7 @@ class TakePhotoActivity : AppCompatActivity() {
 
             imageCapture = ImageCapture.Builder().
             setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).
-            setTargetResolution(Size(1600,1200)).
+            setTargetAspectRatio(aspect).
             build()
 
             // Select back camera as a default

@@ -54,9 +54,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/get_id_from_server"
-        app:layout_constraintEnd_toEndOf="@+id/progressBar2"
-        app:layout_constraintStart_toStartOf="@+id/progressBar2"
-        app:layout_constraintTop_toBottomOf="@+id/progressBar2" />
+        app:layout_constraintStart_toStartOf="@+id/activeGame_button"
+        app:layout_constraintTop_toBottomOf="@+id/activeGame_button" />
 
     <Button
         android:id="@+id/dev_button_1_toTakePhoto"
@@ -74,4 +73,23 @@
         android:text="@string/to_validate"
         app:layout_constraintStart_toStartOf="@+id/dev_button_1_toTakePhoto"
         app:layout_constraintTop_toBottomOf="@+id/dev_button_1_toTakePhoto" />
+
+    <Button
+        android:id="@+id/endAtServer_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/delete_user_at_server"
+        app:layout_constraintStart_toStartOf="@+id/startNewGame_Button"
+        app:layout_constraintTop_toBottomOf="@+id/startNewGame_Button" />
+
+    <TextView
+        android:id="@+id/gameIDview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
