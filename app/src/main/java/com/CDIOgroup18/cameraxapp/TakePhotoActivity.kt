@@ -1,13 +1,15 @@
 package com.CDIOgroup18.cameraxapp
 
-import android.Manifest
+
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -16,7 +18,7 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import kotlinx.android.synthetic.main.activity_main.*
+import androidx.core.view.doOnLayout
 import kotlinx.android.synthetic.main.activity_take_photo.*
 import java.io.File
 import java.util.concurrent.ExecutorService
@@ -49,9 +51,8 @@ class TakePhotoActivity : AppCompatActivity() {
 
         //inform user of status
         var ourToastMessage = ""
-
-                status = if (intent.getStringExtra("status") != null) ({
-        }).toString() else "Ready to take first photo"
+        status = if (intent.getStringExtra("status") != null) ({
+        }).toString() else "firstPhoto"
 
             when (status) {
                 "resumed" -> {
@@ -63,15 +64,32 @@ class TakePhotoActivity : AppCompatActivity() {
                 "no statusIntent" -> {
                     ourToastMessage = "no status"
                 }
+                "firstPhoto" -> {
+                    ourToastMessage = "Please take first photo to start game"
+                }
             }
 
         Toast.makeText(this, ourToastMessage , Toast.LENGTH_SHORT).show()
 
-
-
         outputDirectory = getOutputDirectory()
         cameraExecutor = Executors.newSingleThreadExecutor()
 
+        val noOfVerticalLines = 6
+        var width : Int = 0
+        var height : Int = 0
+
+        viewFinder.doOnLayout {
+          width =  it.measuredWidth
+          height = it.measuredHeight
+        }
+
+        var distanceBetweenLines = width/noOfVerticalLines
+
+        val param = fromLeft1.layoutParams as ViewGroup.MarginLayoutParams
+        param.setMargins(distanceBetweenLines,10,10,10)
+        fromLeft1.layoutParams = param
+
+        fromLeft1.setBackgroundColor(Color.BLUE)
 
     }
 
@@ -98,19 +116,6 @@ class TakePhotoActivity : AppCompatActivity() {
         cameraExecutor.shutdown()
     }
 
-
-    private fun switchToResponseActivity() {
-
-        if (savedUri.equals(null)) {
-            Toast.makeText(this,"No photo taken", Toast.LENGTH_SHORT).show()
-        } else
-        {
-            intent = Intent(this, ResponseActivity2::class.java)
-            intent.putExtra("imagePath", savedUri)
-            startActivity(intent)
-
-        }
-    }
 
     private fun takePhotoGoToValidate() {
         // Get a stable reference of the modifiable image capture use case
@@ -141,12 +146,6 @@ class TakePhotoActivity : AppCompatActivity() {
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(MainActivity.TAG, msg)
 
-                    /*
-                    val thread = SendImage(outputDirectory)
-                    thread.start()
-
-
-                     */
                     goToValidate()
 
                 }
@@ -180,7 +179,7 @@ class TakePhotoActivity : AppCompatActivity() {
 
             imageCapture = ImageCapture.Builder().
             setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).
-            setTargetResolution(Size(1980,1080)).
+            setTargetResolution(Size(1600,1200)).
             build()
 
             // Select back camera as a default
@@ -214,7 +213,6 @@ class TakePhotoActivity : AppCompatActivity() {
     }
 
 
-
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults:
         IntArray) {
@@ -232,4 +230,18 @@ class TakePhotoActivity : AppCompatActivity() {
 
 
     }
+
+    private fun switchToResponseActivity() {
+
+        if (savedUri.equals(null)) {
+            Toast.makeText(this,"No photo taken", Toast.LENGTH_SHORT).show()
+        } else
+        {
+            intent = Intent(this, ResponseActivity2::class.java)
+            intent.putExtra("imagePath", savedUri)
+            startActivity(intent)
+
+        }
+    }
+
 }

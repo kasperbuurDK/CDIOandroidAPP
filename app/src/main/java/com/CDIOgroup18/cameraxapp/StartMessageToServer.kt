@@ -20,8 +20,16 @@ class StartMessageToServer : Thread() {
                 println("$name: $value")
             }
 
-            println("hey"+response.body!!.string())
-            MainActivity.myGameID = response.headers["gameID"]?.toInt() ?: -2
+           println("DEBUG_HEY"+response.body!!.string())
+
+
+            var responseGameID = response.header("gameID")
+
+            MainActivity.myGameID = responseGameID!!.toInt()
+
+            println("responseGameID is: $responseGameID")
+
+            println("MainActivity.myGameID is: ${MainActivity.myGameID}")
 
 
 
