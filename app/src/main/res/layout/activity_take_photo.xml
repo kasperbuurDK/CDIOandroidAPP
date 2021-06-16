@@ -9,14 +9,14 @@
 
     <androidx.camera.view.PreviewView
         android:id="@+id/viewFinder"
-        android:layout_width="729dp"
+        android:layout_width="match_parent"
         android:layout_height="356dp"
         android:layout_marginBottom="1dp"
         app:layout_constraintBottom_toTopOf="@+id/take_photo_button"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-                >
+        app:layout_constraintTop_toTopOf="parent">
 
     </androidx.camera.view.PreviewView>
 

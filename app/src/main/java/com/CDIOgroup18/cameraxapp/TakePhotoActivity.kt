@@ -1,16 +1,17 @@
 package com.CDIOgroup18.cameraxapp
 
-
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.graphics.Color
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.util.Size
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -23,6 +24,7 @@ import kotlinx.android.synthetic.main.activity_take_photo.*
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+
 
 class TakePhotoActivity : AppCompatActivity() {
 
@@ -74,30 +76,41 @@ class TakePhotoActivity : AppCompatActivity() {
         outputDirectory = getOutputDirectory()
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        val noOfVerticalLines = 6
-        var width : Int = 0
-        var height : Int = 0
+        drawVerticalLines()
 
-        viewFinder.doOnLayout {
-          width =  it.measuredWidth
-          height = it.measuredHeight
-        }
+    }
 
-        var distanceBetweenLines = (width/noOfVerticalLines) + 2000
+    private fun drawVerticalLines() {
+        val screeWidth = Resources.getSystem().displayMetrics.widthPixels
+        //val screeHeight = Resources.getSystem().displayMetrics.heightPixels
 
-        println("DEBUG __--__--__--  distanceBetweenLines = $distanceBetweenLines \n" +
-                "width = $width \n " +
-                "height = $height")
+        val noOfFields = 7
+        val distanceBetweenLines = (screeWidth/noOfFields)
 
-        var param = fromLeft1.layoutParams as ViewGroup.MarginLayoutParams
-        param.leftMargin = distanceBetweenLines
+        val param1 = fromLeft1.layoutParams as ViewGroup.MarginLayoutParams
+        param1.marginStart = distanceBetweenLines*1
 
-        fromLeft1.setBackgroundColor(Color.BLUE)
+        val param2 = fromLeft2.layoutParams as ViewGroup.MarginLayoutParams
+        param2.marginStart = distanceBetweenLines*2
 
-        fromLeft1.layoutParams = param
+        val param3 = fromLeft3.layoutParams as ViewGroup.MarginLayoutParams
+        param3.marginStart = distanceBetweenLines*3
 
+        val param4 = fromLeft4.layoutParams as ViewGroup.MarginLayoutParams
+        param4.marginStart = distanceBetweenLines*4
 
+        val param5 = fromLeft5.layoutParams as ViewGroup.MarginLayoutParams
+        param5.marginStart = distanceBetweenLines*5
 
+        val param6 = fromLeft6.layoutParams as ViewGroup.MarginLayoutParams
+        param6.marginStart = distanceBetweenLines*6
+
+        fromLeft1.layoutParams = param1
+        fromLeft2.layoutParams = param2
+        fromLeft3.layoutParams = param3
+        fromLeft4.layoutParams = param4
+        fromLeft5.layoutParams = param5
+        fromLeft6.layoutParams = param6
     }
 
     private fun backToMenu() {
