@@ -37,7 +37,7 @@ class ResponseActivity2 : AppCompatActivity() {
 
 
         newMoveButton.setOnClickListener {
-            intent = Intent(this, MainActivity::class.java)
+            intent = Intent(this, TakePhotoActivity::class.java)
             startActivity(intent)
         }
 
