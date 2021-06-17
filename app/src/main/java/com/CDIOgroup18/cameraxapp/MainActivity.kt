@@ -11,6 +11,9 @@ import android.os.Looper
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import java.io.IOException
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import kotlin.properties.Delegates
@@ -31,9 +34,11 @@ class MainActivity : AppCompatActivity() {
     private var uiThread = Handler(Looper.getMainLooper()) // handle for activity
 
     private var status: String? = null
-    var ourMessage = ""
+    private var ourMessage = ""
 
     private lateinit var ourSharedPref: SharedPreferences
+
+    private val client = OkHttpClient()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,13 +77,9 @@ class MainActivity : AppCompatActivity() {
 
         )
 
-
-
         activeGame_button.setOnClickListener { goToTakePhoto() }
         startNewGame_Button.setOnClickListener { startNewGameAtServer() }
         requestID_Button.setOnClickListener { getIDfromServer() }
-        dev_button_1_toTakePhoto.setOnClickListener { goToTakePhoto() }
-        dev_button_2_toValidate.setOnClickListener { goToValidate() }
         endAtServer_button.setOnClickListener { deleteAccountAtServer() }
 
 
@@ -115,14 +116,11 @@ class MainActivity : AppCompatActivity() {
         updateUserView()
     }
 
-    private fun goToValidate() {
-        intent = Intent(this, ValidateActivity::class.java)
-        startActivity(intent)
-    }
-
     private fun updateUserView() {
         val needGameID = "Need ID to use"
 
+        validID = myGameID != -1
+        
         textView.text = ourMessage
         progressBar2.visibility = View.GONE
         gameIDview.text = "GameID: $myGameID"
@@ -219,24 +217,35 @@ class MainActivity : AppCompatActivity() {
 
     fun getIDfromServer() {
 
-        ourMessage = "Please wait contacting server....\n " +
-                "Obtaning game ID"
+        Thread {
 
-        try {
-            val thread = StartMessageToServer()
-            thread.start()
-            ourMessage = "Got ID from server"
-            validID = true
+        val request = Request.Builder()
+            .url("http://130.225.170.93:9001/api/v1/start")
+            .build()
 
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ourMessage = "Failed to get ID from server"
-            validID = false
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) throw IOException("Unexpected code $response")
+
+            for ((name, value) in response.headers) {
+                println("$name: $value")
+            }
+
+            println("DEBUG_HEY" + response.body!!.string())
+
+
+            var responseGameID = response.header("gameID")
+
+            MainActivity.myGameID = responseGameID!!.toInt()
+
+            println("responseGameID is: $responseGameID")
+            println("MainActivity.myGameID is: ${MainActivity.myGameID}")
+
+            runOnUiThread{updateUserView()}
+
 
         }
+        }.start()
 
-        println("IS RUN DONE?")
-
-        updateUserView()
     }
+
 }

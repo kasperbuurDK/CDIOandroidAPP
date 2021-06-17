@@ -31,8 +31,6 @@ class StartMessageToServer : Thread() {
 
             println("MainActivity.myGameID is: ${MainActivity.myGameID}")
 
-
-
         }
     }
 }
