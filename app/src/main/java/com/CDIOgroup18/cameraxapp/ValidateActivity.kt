@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import coil.load
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_response2.*
 import kotlinx.android.synthetic.main.activity_validate.*
@@ -32,7 +33,6 @@ class ValidateActivity : AppCompatActivity() {
 
     private var savedUri: String? = null
     private lateinit var outputDirectory: File
-    //private val client = OkHttpClient()
 
     private val client = OkHttpClient.Builder()
     .connectTimeout(10, TimeUnit.SECONDS)
@@ -57,13 +57,14 @@ class ValidateActivity : AppCompatActivity() {
             )
         }
 
+
         setContentView(R.layout.activity_validate)
 
         answerOK = false
 
         savedUri = intent.getStringExtra("imagePath").toString()
         imageTakenView.load(savedUri)
-
+         //date = intent.getStringExtra("dato").toString()
 
         undoButton.setOnClickListener {
             intent = Intent(this, TakePhotoActivity::class.java)
@@ -74,44 +75,12 @@ class ValidateActivity : AppCompatActivity() {
 
             println("ID"+MainActivity.myGameID)
 
-
             outputDirectory = getOutputDirectory()
-
-            /*
-            val layout: ConstraintLayout = findViewById(R.id.validateLayout)
-            val progressBar =
-                ProgressBar(this@ValidateActivity, null, android.R.attr.progressBarStyleLarge)
-            val params = ConstraintLayout.LayoutParams(100, 100)
-            */
-
-           /* val layout: RelativeLayout = findViewById(R.id.ValiRelaLayout)
-
-            var proBar =
-                ProgressBar(this@ValidateActivity, null, android.R.attr.progressBarStyleLarge)
-            val params = RelativeLayout.LayoutParams(100, 100)
-            params.addRule(RelativeLayout.CENTER_IN_PARENT)
-
-            layout.addView(proBar, params)
-/*
-
-
-            */
-            */
-
             val proLayout : ConstraintLayout = findViewById(R.id.progressLayout)
             proLayout.isVisible = true
 
-
             goButton.isEnabled = false
             undoButton.isEnabled = false
-
-            //goButton.isClickable = false
-            //undoButton.isClickable = false
-
-            //handler is for test purposes, should be deleted
-            Handler().postDelayed(
-                {
-                    // This method will be executed once the timer is over
 
                     Thread {
                         val file = File(outputDirectory, "aPhoto.jpg")
@@ -123,6 +92,7 @@ class ValidateActivity : AppCompatActivity() {
 
                         val request = Request.Builder()
                             .url("http://130.225.170.93:9001/api/v1/upload/${MainActivity.myGameID}")
+                           // .url("http://130.225.170.93:9001/api/v1/training")
                             .post(requestBody)
                             .build()
 
@@ -132,7 +102,6 @@ class ValidateActivity : AppCompatActivity() {
                             if (response.isSuccessful) {
                                 //println("successful POST"+response.body!!.string())
                                 if (response.body!!.string() == "We uploaded the file!") {
-
 
                                     goToResponse()
                                 } else {
@@ -147,16 +116,10 @@ class ValidateActivity : AppCompatActivity() {
                                     alDialog("commnunication no good")
                                 }
                             }
+
                         }
                     }.start()
 
-                },
-                3000 // value in milliseconds
-            )//end of handler
-
-              //      layout.removeView(progressBar)
-            //buttonEnable(goButton)
-            //buttonEnable(undoButton)
         }
 
     }
@@ -208,22 +171,13 @@ class ValidateActivity : AppCompatActivity() {
             //Toast.makeText(applicationContext,"clicked yes",Toast.LENGTH_LONG).show()
             goToTakePhoto()
         }
-        //performing cancel action
-        //builder.setNeutralButton("Cancel"){dialogInterface , which ->
-        //    Toast.makeText(applicationContext,"clicked cancel\n operation cancel",Toast.LENGTH_LONG).show()
-        // }
-        //performing negative action
-        //builder.setNegativeButton("No"){dialogInterface, which ->
-        //    Toast.makeText(applicationContext,"clicked No",Toast.LENGTH_LONG).show()
-        //}
+
         // Create the AlertDialog
         val alertDialog: AlertDialog = builder.create()
         // Set other dialog properties
         alertDialog.setCancelable(false)
         alertDialog.show()
     }
-
-
 
     companion object {
         private val MEDIA_TYPE_JPG = "image/jpeg".toMediaType()
