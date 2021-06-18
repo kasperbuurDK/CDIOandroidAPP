@@ -5,10 +5,14 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.view.Window
+import android.view.WindowInsets
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.OkHttpClient
@@ -42,8 +46,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        @Suppress("DEPRECATION")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.hide(WindowInsets.Type.statusBars())
+        } else {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        }
+
         setContentView(R.layout.activity_main)
-        this.supportActionBar?.hide();
+
         progressBar2.visibility = View.GONE
 
         bgThread.execute(Runnable {
@@ -87,40 +103,101 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun getIDfromServer() {
+
+        Thread {
+            val request = Request.Builder()
+                .url("http://130.225.170.93:9001/api/v1/start")
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) throw IOException("Unexpected code $response")
+
+                for ((name, value) in response.headers) {
+                    println("$name: $value")
+                }
+
+                println("DEBUG_HEY" + response.body!!.string())
+
+                val responseGameID = response.header("gameID")
+
+                myGameID = responseGameID!!.toInt()
+
+                println("responseGameID is: $responseGameID")
+                println("MainActivity.myGameID is: ${MainActivity.myGameID}")
+
+                runOnUiThread { updateUserView() }
+
+            }
+        }.start()
+
+    }
+
+    private fun startNewGameAtServer() {
+
+        progressBar2.visibility = View.VISIBLE
+        textView.text = "Contacting server to start new game"
+
+       Thread {
+                val request = Request.Builder()
+                    .url("http://130.225.170.93:9001/api/v1/restart/$myGameID")
+                    .build()
+
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
+                    println("HELLLLO from response: ${response.body!!.string()}")
+                }
+
+                runOnUiThread {
+                    progressBar2.visibility = View.GONE
+                    ourMessage = "Game reset at at server"
+                    println("HELLO from UIThread")
+                    updateUserView()
+                }
+
+        }.start()
+    }
+
     private fun deleteAccountAtServer() {
         progressBar2.visibility = View.VISIBLE
         textView.text = "Contacting server to delete account"
 
-        bgThread.execute(Runnable {
+        Thread {
             try {
-                val thread = EndAtServerClass()
-                thread.start()
+                val request = Request.Builder()
+                    .url("http://130.225.170.93:9001/api/v1/end/$myGameID")
+                    .build()
 
-                uiThread.post(Runnable {
-                    progressBar2.visibility = View.GONE
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
+                    println("DEBUG_HEY"+response.body!!.string())
+
                     ourMessage = "Game reset at at server"
-                    textView.text = "Game reset at at server"
                     myGameID = -1
                     validID = false
 
-                })
+                    runOnUiThread {
+                        progressBar2.visibility = View.GONE
+                        updateUserView()
+                        }
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
                 ourMessage = "Failed to restart game at server"
                 textView.text = "Failed to restart game at server"
                 progressBar2.visibility = View.GONE
+                runOnUiThread { updateUserView() }
             }
-        })
 
+        }.start()
 
-        updateUserView()
     }
 
     private fun updateUserView() {
         val needGameID = "Need ID to use"
 
         validID = myGameID != -1
-        
+
         textView.text = ourMessage
         progressBar2.visibility = View.GONE
         gameIDview.text = "GameID: $myGameID"
@@ -147,33 +224,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun startNewGameAtServer() {
 
-        progressBar2.visibility = View.VISIBLE
-        textView.text = "Contacting server to start new game"
-
-        if (myGameID != -1) {
-            bgThread.execute(Runnable {
-                try {
-                    val thread = RestartToServerClass()
-                    thread.start()
-
-                    uiThread.post(Runnable {
-                        progressBar2.visibility = View.GONE
-                        textView.text = "Game reset at at server"
-
-                    })
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    textView.text = "Failed to restart game at server"
-                    progressBar2.visibility = View.GONE
-                }
-            })
-        }
-
-        updateUserView()
-
-    }
 
 
     private fun goToTakePhoto() {
@@ -215,37 +266,5 @@ class MainActivity : AppCompatActivity() {
         ourSharedPref.edit().putInt("gameID", myGameID)
     }
 
-    fun getIDfromServer() {
-
-        Thread {
-
-        val request = Request.Builder()
-            .url("http://130.225.170.93:9001/api/v1/start")
-            .build()
-
-        client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) throw IOException("Unexpected code $response")
-
-            for ((name, value) in response.headers) {
-                println("$name: $value")
-            }
-
-            println("DEBUG_HEY" + response.body!!.string())
-
-
-            var responseGameID = response.header("gameID")
-
-            MainActivity.myGameID = responseGameID!!.toInt()
-
-            println("responseGameID is: $responseGameID")
-            println("MainActivity.myGameID is: ${MainActivity.myGameID}")
-
-            runOnUiThread{updateUserView()}
-
-
-        }
-        }.start()
-
-    }
 
 }
