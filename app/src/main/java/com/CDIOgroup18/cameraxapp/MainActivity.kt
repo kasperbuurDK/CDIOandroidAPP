@@ -59,39 +59,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContentView(R.layout.activity_main)
-
         progressBar2.visibility = View.GONE
-
-        bgThread.execute(Runnable {
-            ourSharedPref = this.getPreferences(Context.MODE_PRIVATE)
-
-            myGameID = ourSharedPref.getInt("gameID", -1)
-
-            validID = myGameID != -1 //if mygameID not -1 then validID is true
-
-            status = if (intent.getStringExtra("status") != null) {
-                intent.getStringExtra("status")
-            } else {
-                "just_started"
-            }
-
-            ourMessage = when (status) {
-                "just_started" -> {
-                    "Welcome to SmartSolitareSolver\n" +
-                            "Enjoy the game"
-                }
-                "fromTakePhoto" -> {
-                    "Returned from TakePhoto\n " +
-                            "Your gameID is still $myGameID"
-                }
-                else -> {
-                    "No known status"
-                }
-            }
-
-        }
-
-        )
 
         activeGame_button.setOnClickListener { goToTakePhoto() }
         startNewGame_Button.setOnClickListener { startNewGameAtServer() }
@@ -99,7 +67,41 @@ class MainActivity : AppCompatActivity() {
         endAtServer_button.setOnClickListener { deleteAccountAtServer() }
 
 
-        updateUserView()
+        Thread {
+
+        ourSharedPref = this.getPreferences(Context.MODE_PRIVATE)
+
+        myGameID = ourSharedPref.getInt("gameID", -1)
+
+        validID = myGameID != -1 //if mygameID not -1 then validID is true
+
+        status = if (intent.getStringExtra("status") != null) {
+            intent.getStringExtra("status")
+        } else {
+            "just_started"
+        }
+
+        ourMessage = when (status) {
+            "just_started" -> {
+                "Welcome to SmartSolitareSolver\n" +
+                        "Enjoy the game"
+            }
+            "fromTakePhoto" -> {
+                "Returned from TakePhoto"
+            }
+            "comError" -> {
+                "Communication error with server \n " +
+                        "Please try again or request new ID"
+            }
+            else -> {
+                "No known status"
+            }
+
+        }
+
+            runOnUiThread { updateUserView() }
+
+        }.start()
 
     }
 
@@ -126,9 +128,10 @@ class MainActivity : AppCompatActivity() {
                 println("responseGameID is: $responseGameID")
                 println("MainActivity.myGameID is: ${MainActivity.myGameID}")
 
-                runOnUiThread { updateUserView() }
+
 
             }
+            runOnUiThread { updateUserView() }
         }.start()
 
     }
@@ -138,22 +141,22 @@ class MainActivity : AppCompatActivity() {
         progressBar2.visibility = View.VISIBLE
         textView.text = "Contacting server to start new game"
 
-       Thread {
-                val request = Request.Builder()
-                    .url("http://130.225.170.93:9001/api/v1/restart/$myGameID")
-                    .build()
+        Thread {
+            val request = Request.Builder()
+                .url("http://130.225.170.93:9001/api/v1/restart/$myGameID")
+                .build()
 
-                client.newCall(request).execute().use { response ->
-                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
-                    println("HELLLLO from response: ${response.body!!.string()}")
-                }
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) throw IOException("Unexpected code $response")
+                println("HELLLLO from response: ${response.body!!.string()}")
+            }
 
-                runOnUiThread {
-                    progressBar2.visibility = View.GONE
-                    ourMessage = "Game reset at at server"
-                    println("HELLO from UIThread")
-                    updateUserView()
-                }
+            runOnUiThread {
+                progressBar2.visibility = View.GONE
+                ourMessage = "Game reset at at server"
+                println("HELLO from UIThread")
+                updateUserView()
+            }
 
         }.start()
     }
@@ -170,7 +173,7 @@ class MainActivity : AppCompatActivity() {
 
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) throw IOException("Unexpected code $response")
-                    println("DEBUG_HEY"+response.body!!.string())
+                    println("DEBUG_HEY" + response.body!!.string())
 
                     ourMessage = "Game reset at at server"
                     myGameID = -1
@@ -179,7 +182,7 @@ class MainActivity : AppCompatActivity() {
                     runOnUiThread {
                         progressBar2.visibility = View.GONE
                         updateUserView()
-                        }
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -225,10 +228,9 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-
     private fun goToTakePhoto() {
         intent = Intent(this, TakePhotoActivity::class.java)
+        intent.putExtra("status", "resumed")
         startActivity(intent)
     }
 

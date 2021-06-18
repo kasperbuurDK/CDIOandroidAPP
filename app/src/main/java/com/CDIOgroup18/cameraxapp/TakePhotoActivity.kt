@@ -30,17 +30,18 @@ import kotlin.math.roundToInt
 
 class TakePhotoActivity : AppCompatActivity() {
 
-    private var status: String = "No statusIntent"
+    private lateinit var status: String
     private var imageCapture: ImageCapture? = null
     private var savedUri: String? = null
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
-    val aspect = 16/12
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         this.requestWindowFeature(Window.FEATURE_NO_TITLE)
+
         @Suppress("DEPRECATION")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.insetsController?.hide(WindowInsets.Type.statusBars())
@@ -58,7 +59,8 @@ class TakePhotoActivity : AppCompatActivity() {
             startCamera()
         } else {
             ActivityCompat.requestPermissions(
-                this, MainActivity.REQUIRED_PERMISSIONS, MainActivity.REQUEST_CODE_PERMISSIONS)
+                this, MainActivity.REQUIRED_PERMISSIONS, MainActivity.REQUEST_CODE_PERMISSIONS
+            )
         }
 
         // Set up the listener for take photo button
@@ -68,43 +70,64 @@ class TakePhotoActivity : AppCompatActivity() {
 
         //inform user of status
         var ourToastMessage = ""
-        status = if (intent.getStringExtra("status") != null) ({
-        }).toString() else "firstPhoto"
 
-            when (status) {
-                "resumed" -> {
-                    ourToastMessage = "Just resumed with no statusIntent"
-                }
-                "nextMove" -> {
-                    ourToastMessage = "Ready for next photo"
-                }
-                "no statusIntent" -> {
-                    ourToastMessage = "no status"
-                }
-                "firstPhoto" -> {
-                    ourToastMessage = "Please take first photo to start game"
-                }
+        status = "noStatusIntent"
+        if (intent.getStringExtra("status") != null) {
+        status = intent.getStringExtra("status")!!
+        }
+
+        when (status) {
+            "resumed" -> {
+                ourToastMessage = "Please take photo to start game"
+            }
+            "nextMove" -> {
+                ourToastMessage = "Ready for next photo"
+            }
+            "userDeclined" -> {
+                ourToastMessage = "You declined the move suggested by server, please send new image"
+            }
+            "noStatusIntent" -> {
+                ourToastMessage = "no status"
+            }
+            "bad_image" -> {
+                ourToastMessage = "Please take new photo \n " +
+                        "Make sure to align cards \n " +
+                        "And keep a right angle over cards "
+            }
+            "fromValidate" -> {
+                ourToastMessage = "Not happy with the photo? \n " +
+                        "Please take a new one"
+            }
+            "internal_server_error" -> {
+                ourToastMessage = "Error at the server \n " +
+                        "If problems continue contact administrator"
+            }
+            else -> {
+                ourToastMessage = "no status intent read"
             }
 
-        Toast.makeText(this, ourToastMessage , Toast.LENGTH_SHORT).show()
+        }
+
+        Toast.makeText(this, ourToastMessage, Toast.LENGTH_SHORT).show()
+
 
         outputDirectory = getOutputDirectory()
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        drawVerticalLines()
+        setupTheScreen()
 
     }
 
-    private fun drawVerticalLines() {
+    private fun setupTheScreen() {
         val screenWidth = Resources.getSystem().displayMetrics.widthPixels
         val screeHeight = Resources.getSystem().displayMetrics.heightPixels
 
         val paramVF = viewFinder.layoutParams as ViewGroup.MarginLayoutParams
 
-        val startX = (screenWidth*0.1).roundToInt()
-        val startY = (screeHeight*0.0025).roundToInt()
-        val viewFinderWidth = (screenWidth*0.8).roundToInt()
-        val viewFinderHeight = (screeHeight*0.8).roundToInt()
+        val startX = (screenWidth * 0.1).roundToInt()
+        val startY = (screeHeight * 0.0025).roundToInt()
+        val viewFinderWidth = (screenWidth * 0.8).roundToInt()
+        val viewFinderHeight = (screeHeight * 0.8).roundToInt()
 
         paramVF.leftMargin = startX
         paramVF.topMargin = startY
@@ -113,36 +136,36 @@ class TakePhotoActivity : AppCompatActivity() {
 
         viewFinder.layoutParams = paramVF
 
-        val noOfFields = 7
-        val distanceBetweenLines = (viewFinderWidth/noOfFields)
+        val noOfColumns = 7
+        val distanceBetweenVerticalLines = (viewFinderWidth / noOfColumns)
 
         val param1 = fromLeft1.layoutParams as ViewGroup.MarginLayoutParams
-        param1.marginStart = startX + distanceBetweenLines*1
+        param1.marginStart = startX + distanceBetweenVerticalLines * 1
         param1.topMargin = startY
         param1.height = viewFinderHeight
 
         val param2 = fromLeft2.layoutParams as ViewGroup.MarginLayoutParams
-        param2.marginStart = startX + distanceBetweenLines*2
+        param2.marginStart = startX + distanceBetweenVerticalLines * 2
         param2.topMargin = startY
         param2.height = viewFinderHeight
 
         val param3 = fromLeft3.layoutParams as ViewGroup.MarginLayoutParams
-        param3.marginStart = startX + distanceBetweenLines*3
+        param3.marginStart = startX + distanceBetweenVerticalLines * 3
         param3.topMargin = startY
         param3.height = viewFinderHeight
 
         val param4 = fromLeft4.layoutParams as ViewGroup.MarginLayoutParams
-        param4.marginStart = startX + distanceBetweenLines*4
+        param4.marginStart = startX + distanceBetweenVerticalLines * 4
         param4.topMargin = startY
         param4.height = viewFinderHeight
 
         val param5 = fromLeft5.layoutParams as ViewGroup.MarginLayoutParams
-        param5.marginStart = startX + distanceBetweenLines*5
+        param5.marginStart = startX + distanceBetweenVerticalLines * 5
         param5.topMargin = startY
         param5.height = viewFinderHeight
 
         val param6 = fromLeft6.layoutParams as ViewGroup.MarginLayoutParams
-        param6.marginStart = startX + distanceBetweenLines*6
+        param6.marginStart = startX + distanceBetweenVerticalLines * 6
         param6.topMargin = startY
         param6.height = viewFinderHeight
 
@@ -152,6 +175,11 @@ class TakePhotoActivity : AppCompatActivity() {
         fromLeft4.layoutParams = param4
         fromLeft5.layoutParams = param5
         fromLeft6.layoutParams = param6
+
+        val paramHorizontalLine = horizontalLine.layoutParams as ViewGroup.MarginLayoutParams
+        paramHorizontalLine.topMargin = startY + viewFinderHeight/3
+        paramHorizontalLine.leftMargin =startX
+        paramHorizontalLine.width = viewFinderWidth
     }
 
     private fun backToMenu() {
@@ -186,7 +214,7 @@ class TakePhotoActivity : AppCompatActivity() {
         //val photoFile = File(outputDirectory,SimpleDateFormat(FILENAME_FORMAT, Locale.US
         //    ).format(System.currentTimeMillis()) + ".jpg")
         //val photoFile = File(outputDirectory,"aPhoto.jpg")
-        val photoFile = File(outputDirectory,"aPhoto.jpg")
+        val photoFile = File(outputDirectory, "aPhoto.jpg")
 
         // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
@@ -203,8 +231,9 @@ class TakePhotoActivity : AppCompatActivity() {
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     savedUri = Uri.fromFile(photoFile).toString()
-                    val msg = "Photo capture succeeded: $savedUri"
-                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+                    val msg =
+                        "Photo capture succeeded. \n Press \"GO\" to send image to server or \"UNDO\" to take a new one"
+                    Toast.makeText(baseContext, msg, Toast.LENGTH_LONG).show()
                     Log.d(MainActivity.TAG, msg)
 
                     goToValidate()
@@ -238,11 +267,10 @@ class TakePhotoActivity : AppCompatActivity() {
 
             // set properties of cameracapture
 
-            imageCapture = ImageCapture.Builder().
-            setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).
-           // setTargetAspectRatio(aspect).
-                setTargetResolution(Size(1600, 1200)).
-            build()
+            imageCapture =
+                ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).
+                    // setTargetAspectRatio(aspect).
+                setTargetResolution(Size(1600, 1200)).build()
 
             // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
@@ -253,9 +281,10 @@ class TakePhotoActivity : AppCompatActivity() {
 
                 // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageCapture)
+                    this, cameraSelector, preview, imageCapture
+                )
 
-            } catch(exc: Exception) {
+            } catch (exc: Exception) {
                 Log.e(MainActivity.TAG, "Use case binding failed", exc)
             }
 
@@ -264,12 +293,14 @@ class TakePhotoActivity : AppCompatActivity() {
 
     private fun allPermissionsGranted() = MainActivity.REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
-            baseContext, it) == PackageManager.PERMISSION_GRANTED
+            baseContext, it
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun getOutputDirectory(): File {
         val mediaDir = externalMediaDirs.firstOrNull()?.let {
-            File(it, resources.getString(R.string.app_name)).apply { mkdirs() } }
+            File(it, resources.getString(R.string.app_name)).apply { mkdirs() }
+        }
         return if (mediaDir != null && mediaDir.exists())
             mediaDir else filesDir
     }
@@ -277,33 +308,23 @@ class TakePhotoActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults:
-        IntArray) {
+        IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == MainActivity.REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
                 startCamera()
             } else {
-                Toast.makeText(this,
+                Toast.makeText(
+                    this,
                     "Permissions not granted by the user.",
-                    Toast.LENGTH_SHORT).show()
+                    Toast.LENGTH_SHORT
+                ).show()
                 finish()
             }
         }
 
 
-    }
-
-    private fun switchToResponseActivity() {
-
-        if (savedUri.equals(null)) {
-            Toast.makeText(this,"No photo taken", Toast.LENGTH_SHORT).show()
-        } else
-        {
-            intent = Intent(this, ResponseActivity2::class.java)
-            intent.putExtra("imagePath", savedUri)
-            startActivity(intent)
-
-        }
     }
 
 }

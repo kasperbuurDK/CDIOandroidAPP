@@ -35,13 +35,13 @@ class ValidateActivity : AppCompatActivity() {
     private lateinit var outputDirectory: File
 
     private val client = OkHttpClient.Builder()
-    .connectTimeout(10, TimeUnit.SECONDS)
-    .writeTimeout(10, TimeUnit.SECONDS)
-    .readTimeout(30, TimeUnit.SECONDS)
-    .build();
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .writeTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .build();
 
 
-    private var answerOK :Boolean = false
+    private var answerOK: Boolean = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,61 +64,78 @@ class ValidateActivity : AppCompatActivity() {
 
         savedUri = intent.getStringExtra("imagePath").toString()
         imageTakenView.load(savedUri)
-         //date = intent.getStringExtra("dato").toString()
+        //date = intent.getStringExtra("dato").toString()
 
         undoButton.setOnClickListener {
             intent = Intent(this, TakePhotoActivity::class.java)
+            intent.putExtra("status", "fromValidate")
             startActivity(intent)
         }
         goButton.setOnClickListener {
             println("TRY SEND TO SERVER")
 
-            println("ID"+MainActivity.myGameID)
+            println("ID" + MainActivity.myGameID)
 
             outputDirectory = getOutputDirectory()
-            val proLayout : ConstraintLayout = findViewById(R.id.progressLayout)
+            val proLayout: ConstraintLayout = findViewById(R.id.progressLayout)
             proLayout.isVisible = true
 
             goButton.isEnabled = false
             undoButton.isEnabled = false
 
-                    Thread {
-                        val file = File(outputDirectory, "aPhoto.jpg")
+            Thread {
+                val file = File(outputDirectory, "aPhoto.jpg")
 
-                        val requestBody = MultipartBody.Builder()
-                            .setType(MultipartBody.FORM)
-                            .addFormDataPart("file", file.name, file.asRequestBody(MEDIA_TYPE_JPG))
-                            .build()
+                val requestBody = MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("file", file.name, file.asRequestBody(MEDIA_TYPE_JPG))
+                    .build()
 
-                        val request = Request.Builder()
-                            .url("http://130.225.170.93:9001/api/v1/upload/${MainActivity.myGameID}")
-                           // .url("http://130.225.170.93:9001/api/v1/training")
-                            .post(requestBody)
-                            .build()
+                val request = Request.Builder()
+                    .url("http://130.225.170.93:9001/api/v1/upload/${MainActivity.myGameID}")
+                    // .url("http://130.225.170.93:9001/api/v1/training")
+                    .post(requestBody)
+                    .build()
 
-                        // client.newCall(request).execute()
+                // client.newCall(request).execute()
 
-                        client.newCall(request).execute().use { response ->
-                            if (response.isSuccessful) {
-                                //println("successful POST"+response.body!!.string())
-                                if (response.body!!.string() == "We uploaded the file!") {
-
-                                    goToResponse()
-                                } else {
-                                    //error message for the user
-                                    runOnUiThread {
-                                        alDialog("server no good")
-                                    }
-                                }
+                client.newCall(request).execute().use { response ->
+                    if (response.isSuccessful) {
+                        //println("successful POST"+response.body!!.string())
+                        when (response.body!!.string()) {
+                            "We uploaded the file!" -> {
+                                goToResponse()
                             }
-                            else {  //not sucessful
+                            "bad_image" -> {
                                 runOnUiThread {
-                                    alDialog("commnunication no good")
+                                    alDialog("Server could not analyze image")
+                                }
+
+                            }
+                            else -> {
+                                //error message for the user
+                                runOnUiThread {
+                                    alDialog("server no good")
                                 }
                             }
-
                         }
-                    }.start()
+                    } else if (response.body!!.string()
+                            .contains("status\":500,\"error")
+                    ) {  //not sucessful
+
+                        runOnUiThread {
+                            alDialog("server internal error")
+                        }
+
+                    } else {
+                        runOnUiThread {
+                            alDialog("Something unexplaned happened")
+                        }
+
+                    }
+                }
+
+            }.start()
 
         }
 
@@ -153,12 +170,15 @@ class ValidateActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun goToTakePhoto() {
+    private fun goToTakePhoto(intentString: String) {
         intent = Intent(this, TakePhotoActivity::class.java)
+        if (intentString != "noIntentString") {
+            intent.putExtra("status", intentString)
+        }
         startActivity(intent)
     }
 
-    private fun alDialog(message : String) {
+    private fun alDialog(message: String) {
         val builder = AlertDialog.Builder(this)
         //set title for alert dialog
         builder.setTitle("Title bohoo")
@@ -167,16 +187,22 @@ class ValidateActivity : AppCompatActivity() {
         builder.setIcon(android.R.drawable.ic_dialog_alert)
 
         //performing positive action
-        builder.setPositiveButton("OK"){dialogInterface, which ->
+        builder.setPositiveButton("OK") { dialogInterface, which ->
             //Toast.makeText(applicationContext,"clicked yes",Toast.LENGTH_LONG).show()
-            goToTakePhoto()
-        }
+            if (message == "Server could not analyze image") {
+                goToTakePhoto("bad_image")
+            } else if (message == "commnunication no good") {
+                goToTakePhoto("comError")
+            } else if (message == "server internal error") {
+                goToTakePhoto("internal_server_error")
+            }
 
-        // Create the AlertDialog
-        val alertDialog: AlertDialog = builder.create()
-        // Set other dialog properties
-        alertDialog.setCancelable(false)
-        alertDialog.show()
+            // Create the AlertDialog
+            val alertDialog: AlertDialog = builder.create()
+            // Set other dialog properties
+            alertDialog.setCancelable(false)
+            alertDialog.show()
+        }
     }
 
     companion object {

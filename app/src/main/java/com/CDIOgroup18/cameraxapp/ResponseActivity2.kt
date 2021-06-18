@@ -38,6 +38,13 @@ class ResponseActivity2 : AppCompatActivity() {
 
         newMoveButton.setOnClickListener {
             intent = Intent(this, TakePhotoActivity::class.java)
+            intent.putExtra("status", "nextMove")
+            startActivity(intent)
+        }
+
+        decline_move_button.setOnClickListener {
+            intent = Intent(this, TakePhotoActivity::class.java)
+            intent.putExtra("status", "userDeclined")
             startActivity(intent)
         }
 

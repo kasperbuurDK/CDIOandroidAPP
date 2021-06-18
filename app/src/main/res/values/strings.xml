@@ -23,5 +23,6 @@
     <string name="to_validate">To validate</string>
     <string name="new_move">New move</string>
     <string name="delete_user_at_server">Delete user at server</string>
+    <string name="decline_move">Decline move</string>
 
 </resources>
