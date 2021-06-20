@@ -7,8 +7,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import android.view.Window
 import android.view.WindowInsets
@@ -18,9 +16,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
-import java.util.concurrent.Executor
-import java.util.concurrent.Executors
-import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,10 +28,6 @@ class MainActivity : AppCompatActivity() {
         var validID = false
     }
 
-    private var bgThread: Executor =
-        Executors.newSingleThreadExecutor() // handle for backgroundThread (network com)
-    private var uiThread = Handler(Looper.getMainLooper()) // handle for activity
-
     private var status: String? = null
     private var ourMessage = ""
 
@@ -47,6 +38,63 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        removeTitleAndActionBar()
+
+        setContentView(R.layout.activity_main)
+        progressBar2.visibility = View.GONE
+
+        setOnClickListeners()
+
+        prepareScreen()
+
+    }
+
+    private fun prepareScreen() {
+        Thread {
+
+            ourSharedPref = this.getPreferences(Context.MODE_PRIVATE)
+
+            myGameID = ourSharedPref.getInt("gameID", -1)
+
+            validID = myGameID != -1 //if mygameID not -1 then validID is true
+
+            status = if (intent.getStringExtra("status") != null) {
+                intent.getStringExtra("status")
+            } else {
+                "just_started"
+            }
+
+            ourMessage = when (status) {
+                "just_started" -> {
+                    "Welcome to SmartSolitareSolver\n" +
+                            "Enjoy the game"
+                }
+                "fromTakePhoto" -> {
+                    "Returned from TakePhoto"
+                }
+                "comError" -> {
+                    "Communication error with server \n " +
+                            "Please try again or request new ID"
+                }
+                else -> {
+                    "No known status"
+                }
+
+            }
+
+            runOnUiThread { updateUserView() }
+
+        }.start()
+    }
+
+    private fun setOnClickListeners() {
+        activeGame_button.setOnClickListener { goToTakePhoto() }
+        startNewGame_Button.setOnClickListener { startNewGameAtServer() }
+        requestID_Button.setOnClickListener { getIDfromServer() }
+        endAtServer_button.setOnClickListener { deleteAccountAtServer() }
+    }
+
+    private fun removeTitleAndActionBar() {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE)
         @Suppress("DEPRECATION")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -57,52 +105,6 @@ class MainActivity : AppCompatActivity() {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN
             )
         }
-
-        setContentView(R.layout.activity_main)
-        progressBar2.visibility = View.GONE
-
-        activeGame_button.setOnClickListener { goToTakePhoto() }
-        startNewGame_Button.setOnClickListener { startNewGameAtServer() }
-        requestID_Button.setOnClickListener { getIDfromServer() }
-        endAtServer_button.setOnClickListener { deleteAccountAtServer() }
-
-
-        Thread {
-
-        ourSharedPref = this.getPreferences(Context.MODE_PRIVATE)
-
-        myGameID = ourSharedPref.getInt("gameID", -1)
-
-        validID = myGameID != -1 //if mygameID not -1 then validID is true
-
-        status = if (intent.getStringExtra("status") != null) {
-            intent.getStringExtra("status")
-        } else {
-            "just_started"
-        }
-
-        ourMessage = when (status) {
-            "just_started" -> {
-                "Welcome to SmartSolitareSolver\n" +
-                        "Enjoy the game"
-            }
-            "fromTakePhoto" -> {
-                "Returned from TakePhoto"
-            }
-            "comError" -> {
-                "Communication error with server \n " +
-                        "Please try again or request new ID"
-            }
-            else -> {
-                "No known status"
-            }
-
-        }
-
-            runOnUiThread { updateUserView() }
-
-        }.start()
-
     }
 
     private fun getIDfromServer() {
@@ -126,9 +128,7 @@ class MainActivity : AppCompatActivity() {
                 myGameID = responseGameID!!.toInt()
 
                 println("responseGameID is: $responseGameID")
-                println("MainActivity.myGameID is: ${MainActivity.myGameID}")
-
-
+                println("MainActivity.myGameID is: ${myGameID}")
 
             }
             runOnUiThread { updateUserView() }
