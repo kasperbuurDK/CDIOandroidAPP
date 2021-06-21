@@ -1,5 +1,6 @@
 package com.CDIOgroup18.cameraxapp
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -48,7 +49,6 @@ class ResponseActivity2 : AppCompatActivity() {
         }
 
         // Get image reponse from server and show it
-
         Thread {
             val request = Request.Builder()
                 .url("http://130.225.170.93:9001/api/v1/download/${MainActivity.myGameID}")
@@ -64,15 +64,36 @@ class ResponseActivity2 : AppCompatActivity() {
                 }
             } catch(e : Exception){
                 e.printStackTrace()
-                //udskriv error og navigere
+                    runOnUiThread {
+                        alDialog("Server error: No response image sent")
+                    }
             }
-
-
         }.start()
     }
+
+    // Error dialog
+    private fun alDialog(message: String) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Error detected!")
+        builder.setMessage(message)
+        builder.setIcon(android.R.drawable.ic_dialog_alert)
+
+        // Performing on ok button
+        builder.setPositiveButton("OK") { dialogInterface, which ->
+            goToTakePhoto("no_response")
+
+            // Create the AlertDialog
+            val alertDialog: AlertDialog = builder.create()
+            alertDialog.setCancelable(false)
+            alertDialog.show()
+        }
+    }
+
+    private fun goToTakePhoto(intentString: String) {
+        intent = Intent(this, TakePhotoActivity::class.java)
+        if (intentString != "noIntentString") {
+            intent.putExtra("status", intentString)
+        }
+        startActivity(intent)
+    }
 }
-
-
-
-
-

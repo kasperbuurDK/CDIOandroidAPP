@@ -73,6 +73,9 @@ class MainActivity : AppCompatActivity() {
                     "Communication error with server \n " +
                             "Please try again or request new ID"
                 }
+                "no_reponse" -> {
+                    "Server failed to response with photo"
+                }
                 else -> {
                     "No known status"
                 }
