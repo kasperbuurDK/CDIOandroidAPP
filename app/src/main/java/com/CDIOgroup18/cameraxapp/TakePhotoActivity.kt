@@ -1,5 +1,6 @@
 package com.CDIOgroup18.cameraxapp
 
+import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
@@ -25,10 +26,15 @@ import kotlinx.android.synthetic.main.activity_take_photo.*
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import kotlin.math.roundToInt
 
 
 class TakePhotoActivity : AppCompatActivity() {
+
+    companion object {
+        const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
+        const val REQUEST_CODE_PERMISSIONS = 10
+        val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+    }
 
     private lateinit var status: String
     private var imageCapture: ImageCapture? = null
@@ -59,17 +65,17 @@ class TakePhotoActivity : AppCompatActivity() {
             startCamera()
         } else {
             ActivityCompat.requestPermissions(
-                this, MainActivity.REQUIRED_PERMISSIONS, MainActivity.REQUEST_CODE_PERMISSIONS
+                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
             )
         }
 
         // Set up the listener for take photo button
 
-        take_photo_button.setOnClickListener { takePhotoGoToValidate() }
-        to_menu_button.setOnClickListener { backToMenu() }
+       take_photo_button.setOnClickListener { takePhotoGoToValidate() }
+       to_menu_button.setOnClickListener { backToMenu() }
 
         //inform user of status
-        var ourToastMessage = ""
+        var ourToastMessage : String
 
         status = "noStatusIntent"
         if (intent.getStringExtra("status") != null) {
@@ -118,17 +124,25 @@ class TakePhotoActivity : AppCompatActivity() {
 
     }
 
+
     private fun setupTheScreen() {
         val screenWidth = Resources.getSystem().displayMetrics.widthPixels
-        val screeHeight = Resources.getSystem().displayMetrics.heightPixels
+        val screenHeight = Resources.getSystem().displayMetrics.heightPixels
 
         val paramVF = viewFinder.layoutParams as ViewGroup.MarginLayoutParams
 
+        val viewFinderHeight = screenHeight
+        val viewFinderWidth = screenWidth
+        val diffScreenVSviewFinder = screenWidth - viewFinderWidth
+
+        val startX = diffScreenVSviewFinder/2
+        val startY = 0
+/*
         val startX = (screenWidth * 0.1).roundToInt()
         val startY = (screeHeight * 0.0025).roundToInt()
         val viewFinderWidth = (screenWidth * 0.8).roundToInt()
         val viewFinderHeight = (screeHeight * 0.8).roundToInt()
-
+*/
         paramVF.leftMargin = startX
         paramVF.topMargin = startY
         paramVF.height = viewFinderHeight
@@ -236,12 +250,19 @@ class TakePhotoActivity : AppCompatActivity() {
                     Toast.makeText(baseContext, msg, Toast.LENGTH_LONG).show()
                     Log.d(MainActivity.TAG, msg)
 
-                    goToValidate()
-
+                   // goToValidate()
+                    goToAlternativeValidate()
                 }
 
             })
 
+    }
+
+    private fun goToAlternativeValidate() {
+        intent = Intent(this, Alternative_validateActivity()::class.java)
+        intent.putExtra("imagePath", savedUri)
+        intent.putExtra("outputD", outputDirectory)
+        startActivity(intent)
     }
 
     private fun goToValidate() {
@@ -270,8 +291,9 @@ class TakePhotoActivity : AppCompatActivity() {
 
             imageCapture =
                 ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).
-                    // setTargetAspectRatio(aspect).
-                setTargetResolution(Size(1600, 1200)).build()
+                   // setTargetAspectRatio(aspectRatio).
+                setTargetResolution(Size(Resources.getSystem().displayMetrics.widthPixels, Resources.getSystem().displayMetrics.heightPixels)).
+                 build()
 
             // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
@@ -292,7 +314,7 @@ class TakePhotoActivity : AppCompatActivity() {
         }, ContextCompat.getMainExecutor(this))
     }
 
-    private fun allPermissionsGranted() = MainActivity.REQUIRED_PERMISSIONS.all {
+    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
             baseContext, it
         ) == PackageManager.PERMISSION_GRANTED
@@ -312,7 +334,7 @@ class TakePhotoActivity : AppCompatActivity() {
         IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == MainActivity.REQUEST_CODE_PERMISSIONS) {
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
                 startCamera()
             } else {

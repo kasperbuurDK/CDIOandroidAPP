@@ -21,9 +21,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val TAG = "CameraXBasic"
-        const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
-        const val REQUEST_CODE_PERMISSIONS = 10
-        val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
         var myGameID = -1
         var validID = false
     }
