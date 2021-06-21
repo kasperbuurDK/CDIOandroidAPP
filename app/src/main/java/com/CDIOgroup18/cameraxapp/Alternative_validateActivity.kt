@@ -98,16 +98,14 @@ class Alternative_validateActivity: AppCompatActivity() {
                     .post(requestBody)
                     .build()
 
-                // client.newCall(request).execute()
 
-                println("!!!!! DEBUG !!!!!!!! just before try")
 
                 var responseBody = ""
                 try {
                     client.newCall(request).execute().use { response ->
 
                         responseBody = response.body!!.string()
-                        println("!!!!! DEBUG !!!! successful POST" + response.body!!.string())
+
                         when (response.body!!.string()) {
                             "We uploaded the file!" -> {
                                 goToResponse()
@@ -128,16 +126,15 @@ class Alternative_validateActivity: AppCompatActivity() {
                     }
                 } catch (e : Exception) {
                     e.printStackTrace()
-                    println("!!!! DEBUG it was a catch")
-                    println("Response body : $responseBody")
+
                     if (responseBody.contains("Internal Server Error")) {
-                        println("in the server internal error")
+
                         runOnUiThread {
-                            println("run on uiThread")
+
                             alDialog("Internal Server Error")
                         }
                     } else {
-                        println("in the else")
+
                         runOnUiThread {
                             alDialog("Something unexplained happened")
                         }
@@ -191,7 +188,7 @@ class Alternative_validateActivity: AppCompatActivity() {
     private fun alDialog(message: String) {
         val builder = AlertDialog.Builder(this)
         //set title for alert dialog
-        builder.setTitle("Title bohoo")
+        builder.setTitle("Error detected!")
         //set message for alert dialog
         builder.setMessage(message)
         builder.setIcon(android.R.drawable.ic_dialog_alert)
@@ -209,12 +206,14 @@ class Alternative_validateActivity: AppCompatActivity() {
                 goToTakePhoto("noStatusIntent")
             }
 
-            // Create the AlertDialog
-            val alertDialog: AlertDialog = builder.create()
-            // Set other dialog properties
-            alertDialog.setCancelable(false)
-            alertDialog.show()
+
         }
+
+        // Create the AlertDialog
+        val alertDialog: AlertDialog = builder.create()
+        // Set other dialog properties
+        alertDialog.setCancelable(false)
+        alertDialog.show()
     }
 
     companion object {
