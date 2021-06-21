@@ -24,5 +24,9 @@
     <string name="new_move">New move</string>
     <string name="delete_user_at_server">Delete user at server</string>
     <string name="decline_move">Decline move</string>
+    <string name="menu_header">Main menu</string>
+    <string name="take_photo_header">1. Take Photo</string>
+    <string name="validate_photo_header">2. Validate Photo</string>
+    <string name="Response_header">3. Response from server</string>
 
 </resources>
