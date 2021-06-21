@@ -32,6 +32,9 @@ class ValidateActivity: AppCompatActivity() {
     private var savedUri: String? = null
     private lateinit var outputDirectory: File
 
+    //test purpose
+    private var ipAdr : String = ""
+
     private val client = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .writeTimeout(10, TimeUnit.SECONDS)
@@ -70,6 +73,10 @@ class ValidateActivity: AppCompatActivity() {
             goButton.isEnabled = false
             undoButton.isEnabled = false
 
+            //test purpose
+            ipAdr = textInput.text.toString()
+
+
             Thread {
                 val file = File(outputDirectory, "aPhoto.jpg")
 
@@ -79,7 +86,9 @@ class ValidateActivity: AppCompatActivity() {
                     .build()
 
                 val request = Request.Builder()
-                    .url("http://130.225.170.93:9001/api/v1/upload/${MainActivity.myGameID}")
+                   // .url("http://130.225.170.93:9001/api/v1/upload/${MainActivity.myGameID}")
+                   //130.225.170.93:9001
+                    .url("http://" + ipAdr +"/api/v1/upload/${MainActivity.myGameID}")
                     .post(requestBody)
                     .build()
 
