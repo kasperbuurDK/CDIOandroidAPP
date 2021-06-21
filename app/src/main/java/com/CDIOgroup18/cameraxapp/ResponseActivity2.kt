@@ -1,6 +1,5 @@
 package com.CDIOgroup18.cameraxapp
 
-
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -14,12 +13,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 import java.io.InputStream
-
+import java.lang.Exception
 
 class ResponseActivity2 : AppCompatActivity() {
 
     private val client = OkHttpClient()
-
     private lateinit var bitmap: Bitmap
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,42 +33,43 @@ class ResponseActivity2 : AppCompatActivity() {
         }
         setContentView(R.layout.activity_response2)
 
-
+        // Button to accept image and start a new move
         newMoveButton.setOnClickListener {
             intent = Intent(this, TakePhotoActivity::class.java)
             intent.putExtra("status", "nextMove")
             startActivity(intent)
         }
 
+        // Button to decline the image
         decline_move_button.setOnClickListener {
             intent = Intent(this, TakePhotoActivity::class.java)
             intent.putExtra("status", "userDeclined")
             startActivity(intent)
         }
 
+        // Get image reponse from server and show it
+
         Thread {
             val request = Request.Builder()
                 .url("http://130.225.170.93:9001/api/v1/download/${MainActivity.myGameID}")
                 .build()
-
-            client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) throw IOException("Unexpected code $response")
-
-                val inputStream: InputStream = response.body!!.byteStream()
-                bitmap = BitmapFactory.decodeStream(inputStream)
-
-                runOnUiThread {
-                    cardMoveImg.setImageBitmap(bitmap)
+            try {
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
+                    val inputStream: InputStream = response.body!!.byteStream()
+                    bitmap = BitmapFactory.decodeStream(inputStream)
+                    runOnUiThread {
+                        cardMoveImg.setImageBitmap(bitmap)
+                    }
                 }
+            } catch(e : Exception){
+                e.printStackTrace()
+                //udskriv error og navigere
             }
 
+
         }.start()
-
-
-
-
     }
-
 }
 
 

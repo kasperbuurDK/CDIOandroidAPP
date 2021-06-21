@@ -90,19 +90,18 @@ class ValidateActivity: AppCompatActivity() {
                     client.newCall(request).execute().use { response ->
                         responseBody = response.body!!.string()
 
-                        //println("debug1" + responseBody)
                         when (responseBody) {
                             "We uploaded the file!" -> {
                                 goToResponse()
                             }
                             "bad_image" -> {
                                 runOnUiThread {
-                                alDialog("Server could not analyze image.")
+                                alDialog("Server error: Server could not analyze image")
                                }
                             }
                             else -> {
                                 runOnUiThread {
-                                    alDialog("Server error.")
+                                    alDialog("Server error: No response image sent")
                                 }
                             }
                         }
@@ -111,11 +110,11 @@ class ValidateActivity: AppCompatActivity() {
                     e.printStackTrace()
                     if (responseBody.contains("Internal Server Error")) {
                         runOnUiThread {
-                            alDialog("Internal Server Error")
+                            alDialog("Server error: No response image sent")
                         }
                     } else {
                         runOnUiThread {
-                        alDialog("Something unexplained happened")
+                        alDialog("Communication error: Photo was not sent")
                         }
                     }
                 }
