@@ -259,15 +259,14 @@ class TakePhotoActivity : AppCompatActivity() {
     }
 
     private fun goToAlternativeValidate() {
-        intent = Intent(this, Alternative_validateActivity()::class.java)
+        intent = Intent(this, ValidateActivity()::class.java)
         intent.putExtra("imagePath", savedUri)
         intent.putExtra("outputD", outputDirectory)
         startActivity(intent)
     }
 
     private fun goToValidate() {
-        //intent = Intent(this, ValidateActivity::class.java)
-        intent = Intent(this, Alternative_validateActivity::class.java)
+        intent = Intent(this, ValidateActivity::class.java)
         intent.putExtra("imagePath", savedUri)
         intent.putExtra("outputD", outputDirectory)
         startActivity(intent)

@@ -26,10 +26,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
+import java.lang.Exception
 import java.util.concurrent.TimeUnit
 
 
-class ValidateActivity : AppCompatActivity() {
+class ValidateActivity: AppCompatActivity() {
 
     private var savedUri: String? = null
     private lateinit var outputDirectory: File
@@ -97,11 +98,14 @@ class ValidateActivity : AppCompatActivity() {
                     .post(requestBody)
                     .build()
 
-                // client.newCall(request).execute()
 
-                client.newCall(request).execute().use { response ->
-                    if (response.isSuccessful) {
-                        //println("successful POST"+response.body!!.string())
+
+                var responseBody = ""
+                try {
+                    client.newCall(request).execute().use { response ->
+
+                        responseBody = response.body!!.string()
+
                         when (response.body!!.string()) {
                             "We uploaded the file!" -> {
                                 goToResponse()
@@ -110,26 +114,28 @@ class ValidateActivity : AppCompatActivity() {
                                 runOnUiThread {
                                     alDialog("Server could not analyze image")
                                 }
-
                             }
                             else -> {
-                                //error message for the user
                                 runOnUiThread {
                                     alDialog("server no good")
                                 }
                             }
                         }
-                    } else if (response.body!!.string()
-                            .contains("status\":500,\"error")
-                    ) {  //not sucessful
+
+                    }
+                } catch (e : Exception) {
+                    e.printStackTrace()
+
+                    if (responseBody.contains("Internal Server Error")) {
 
                         runOnUiThread {
-                            alDialog("server internal error")
+
+                            alDialog("Internal Server Error")
                         }
-
                     } else {
+
                         runOnUiThread {
-                            alDialog("Something unexplaned happened")
+                            alDialog("Something unexplained happened")
                         }
 
                     }
@@ -181,7 +187,7 @@ class ValidateActivity : AppCompatActivity() {
     private fun alDialog(message: String) {
         val builder = AlertDialog.Builder(this)
         //set title for alert dialog
-        builder.setTitle("Title bohoo")
+        builder.setTitle("Error detected!")
         //set message for alert dialog
         builder.setMessage(message)
         builder.setIcon(android.R.drawable.ic_dialog_alert)
@@ -193,16 +199,20 @@ class ValidateActivity : AppCompatActivity() {
                 goToTakePhoto("bad_image")
             } else if (message == "commnunication no good") {
                 goToTakePhoto("comError")
-            } else if (message == "server internal error") {
+            } else if (message == "Internal Server Error") {
                 goToTakePhoto("internal_server_error")
+            } else {
+                goToTakePhoto("noStatusIntent")
             }
 
-            // Create the AlertDialog
-            val alertDialog: AlertDialog = builder.create()
-            // Set other dialog properties
-            alertDialog.setCancelable(false)
-            alertDialog.show()
+
         }
+
+        // Create the AlertDialog
+        val alertDialog: AlertDialog = builder.create()
+        // Set other dialog properties
+        alertDialog.setCancelable(false)
+        alertDialog.show()
     }
 
     companion object {
