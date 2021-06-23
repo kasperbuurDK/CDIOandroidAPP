@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit
 
 class ValidateActivity: AppCompatActivity() {
     private var savedUri: String? = null
+    private var responseBody = ""
     private lateinit var outputDirectory: File
 
     //test purpose
@@ -51,6 +52,7 @@ class ValidateActivity: AppCompatActivity() {
 
         setContentView(R.layout.activity_validate)
 
+        responseBody = ""
         savedUri = intent.getStringExtra("imagePath").toString()
         imageTakenView.load(savedUri)
 
@@ -111,28 +113,40 @@ class ValidateActivity: AppCompatActivity() {
                         post(requestBody).build()
 
 
-                var responseBody = ""
+
 
                 //Send photo
                 try {
                     client.newCall(request).execute().use { response ->
                         responseBody = response.body!!.string()
-
-                        when (responseBody) {
-                            "We uploaded the file!" -> {
-                                goToResponse()
-                            }
-                            "bad_image" -> {
-                                runOnUiThread {
+                        if (responseBody.contains("Kort")){
+                            goToResponse();
+                        } else if (responseBody.contains("bad")) {
+                            runOnUiThread {
                                 alDialog("Server error: Server could not analyze image")
-                               }
                             }
-                            else -> {
-                                runOnUiThread {
-                                    alDialog("Server error: No response image sent")
-                                }
+                        } else {
+                            runOnUiThread {
+                                alDialog("Server error: No response image sent")
                             }
                         }
+                       /* when () {
+                            //"We uploaded the file!" -> {
+                            //    goToResponse()
+                            //}
+                                // skal udskrive response string HUSK
+
+                             //noget med kort
+                            "" -> {
+
+                            }
+                                    "bad_image" -> {
+
+                            }
+                            else -> {
+
+                            }
+                        }*/
                     }
                 } catch (e : Exception) {
                     e.printStackTrace()
@@ -176,6 +190,7 @@ class ValidateActivity: AppCompatActivity() {
 
     private fun goToResponse() {
         intent = Intent(this, ResponseActivity2::class.java)
+        intent.putExtra("response", responseBody)
         startActivity(intent)
     }
 

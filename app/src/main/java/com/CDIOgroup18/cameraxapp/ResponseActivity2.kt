@@ -34,6 +34,11 @@ class ResponseActivity2 : AppCompatActivity() {
         }
         setContentView(R.layout.activity_response2)
 
+        val responseMove = intent.getStringExtra("response").toString()
+
+        responseView.text = responseMove
+
+
         // Button to accept image and start a new move
         newMoveButton.setOnClickListener {
             intent = Intent(this, TakePhotoActivity::class.java)
@@ -76,7 +81,7 @@ class ResponseActivity2 : AppCompatActivity() {
             } catch(e : Exception){
                 e.printStackTrace()
                     runOnUiThread {
-                        alDialog("Server error: No response image sent")
+                        alDialog("Server error: No response image sent111")
                     }
             }
         }.start()
