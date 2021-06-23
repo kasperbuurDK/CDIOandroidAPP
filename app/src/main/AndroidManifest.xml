@@ -16,7 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CameraXAPP"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Alternative_validateActivity"></activity>
+        <activity android:name=".ValidateWithResize_ALTERNATIVE"
+            android:configChanges="orientation"
+            android:screenOrientation="landscape" />
         <activity
             android:name=".TakePhotoActivity"
             android:configChanges="orientation"

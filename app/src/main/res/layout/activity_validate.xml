@@ -60,19 +60,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/textInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="visible" />
-    </com.google.android.material.textfield.TextInputLayout>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/progressLayout"
         android:layout_width="match_parent"

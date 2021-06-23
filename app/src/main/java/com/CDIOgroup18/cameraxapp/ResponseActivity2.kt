@@ -50,9 +50,20 @@ class ResponseActivity2 : AppCompatActivity() {
 
         // Get image reponse from server and show it
         Thread {
+
+            //SERVERVERSION
+            /*
             val request = Request.Builder()
                 .url("http://130.225.170.93:9001/api/v1/download/${MainActivity.myGameID}")
                 .build()
+             */
+
+            //LOCALVERSION
+            val request = Request.Builder()
+                .url("http://10.16.160.41:8080/api/v1/download/${MainActivity.myGameID}")
+                .build()
+
+
             try {
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) throw IOException("Unexpected code $response")

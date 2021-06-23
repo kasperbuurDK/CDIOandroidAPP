@@ -1,7 +1,6 @@
 package com.CDIOgroup18.cameraxapp
 
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -110,9 +109,20 @@ class MainActivity : AppCompatActivity() {
     private fun getIDfromServer() {
 
         Thread {
+
+
+            /* SERVERVERSION
             val request = Request.Builder()
                 .url("http://130.225.170.93:9001/api/v1/start")
                 .build()
+            */
+
+            // LOCAL VERSION
+            val request = Request.Builder()
+                .url("http://10.16.160.41:8080/api/v1/start")
+                .build()
+
+
 
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) throw IOException("Unexpected code $response")
@@ -142,9 +152,19 @@ class MainActivity : AppCompatActivity() {
         textView.text = "Contacting server to start new game"
 
         Thread {
+
+            /* SERVERVERSION
             val request = Request.Builder()
                 .url("http://130.225.170.93:9001/api/v1/restart/$myGameID")
                 .build()
+
+             */
+
+            // LOCAL VERSION
+            val request = Request.Builder()
+                .url("http://10.16.160.41:8080/api/v1/restart/$myGameID")
+                .build()
+
 
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) throw IOException("Unexpected code $response")
@@ -167,9 +187,19 @@ class MainActivity : AppCompatActivity() {
 
         Thread {
             try {
+
+                /* SERVERVERSION
                 val request = Request.Builder()
                     .url("http://130.225.170.93:9001/api/v1/end/$myGameID")
                     .build()
+                 */
+
+                     // LOCALVERSION
+                val request = Request.Builder()
+                    .url("http://10.16.160.41:8080/api/v1/end/$myGameID")
+                    .build()
+
+
 
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) throw IOException("Unexpected code $response")

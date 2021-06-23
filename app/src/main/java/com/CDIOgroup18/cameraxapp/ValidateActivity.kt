@@ -2,22 +2,18 @@ package com.CDIOgroup18.cameraxapp
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsets
 import android.view.WindowManager
-import android.widget.ProgressBar
-import android.widget.RelativeLayout
+
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import coil.load
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_response2.*
+
 import kotlinx.android.synthetic.main.activity_validate.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -33,7 +29,7 @@ class ValidateActivity: AppCompatActivity() {
     private lateinit var outputDirectory: File
 
     //test purpose
-    private var ipAdr : String = ""
+//    private var ipAdr : String = ""
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
@@ -74,8 +70,20 @@ class ValidateActivity: AppCompatActivity() {
             undoButton.isEnabled = false
 
             //test purpose
-            ipAdr = textInput.text.toString()
+            //ipAdr = textInput.text.toString()
 
+
+            val screenWidth = Resources.getSystem().displayMetrics.widthPixels
+            val screenHeight = Resources.getSystem().displayMetrics.heightPixels
+
+            val imageViewParams = imageTakenView.layoutParams as ViewGroup.MarginLayoutParams
+
+            imageViewParams.height = screenHeight
+            imageViewParams.width = screenWidth
+            imageViewParams.marginStart = 0
+            imageViewParams.topMargin = 0
+
+            imageTakenView.layoutParams = imageViewParams
 
             Thread {
                 val file = File(outputDirectory, "aPhoto.jpg")
@@ -85,12 +93,23 @@ class ValidateActivity: AppCompatActivity() {
                     .addFormDataPart("file", file.name, file.asRequestBody(MEDIA_TYPE_JPG))
                     .build()
 
+
+                //SERVERVERSION
+                /*
                 val request = Request.Builder()
                    // .url("http://130.225.170.93:9001/api/v1/upload/${MainActivity.myGameID}")
                    //130.225.170.93:9001
-                    .url("http://" + ipAdr +"/api/v1/upload/${MainActivity.myGameID}")
+                   // .url("http://" + ipAdr +"/api/v1/upload/${MainActivity.myGameID}")
                     .post(requestBody)
                     .build()
+
+                 */
+
+                //LOCALVERSION
+                val request = Request.Builder().
+                url("http://10.16.160.41:8080/api/v1/upload/${MainActivity.myGameID}").
+                        post(requestBody).build()
+
 
                 var responseBody = ""
 
@@ -177,7 +196,7 @@ class ValidateActivity: AppCompatActivity() {
 
         // Performing on ok button
         builder.setPositiveButton("OK") { dialogInterface, which ->
-            if (message == "Server could not analyze image") {
+            if (message == "Server error: Server could not analyze image") {
                 goToTakePhoto("bad_image")
             } else if (message == "commnunication no good") {
                 goToTakePhoto("comError")

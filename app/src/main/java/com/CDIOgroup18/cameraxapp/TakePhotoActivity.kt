@@ -114,7 +114,7 @@ class TakePhotoActivity : AppCompatActivity() {
 
         }
 
-        Toast.makeText(this, ourToastMessage, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, ourToastMessage, Toast.LENGTH_LONG).show()
 
 
         outputDirectory = getOutputDirectory()
@@ -191,7 +191,7 @@ class TakePhotoActivity : AppCompatActivity() {
         fromLeft6.layoutParams = param6
 
         val paramHorizontalLine = horizontalLine.layoutParams as ViewGroup.MarginLayoutParams
-        paramHorizontalLine.topMargin = startY + viewFinderHeight/3
+        paramHorizontalLine.topMargin = startY + viewFinderHeight/2
         paramHorizontalLine.leftMargin =startX
         paramHorizontalLine.width = viewFinderWidth
     }
