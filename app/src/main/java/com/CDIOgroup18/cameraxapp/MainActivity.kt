@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
         const val TAG = "CameraXBasic"
         var myGameID = -1
         var validID = false
+        const val serverURL = "130.225.170.93:9001"
     }
 
     private var status: String? = null
@@ -111,18 +112,20 @@ class MainActivity : AppCompatActivity() {
         Thread {
 
 
-            /* SERVERVERSION
-            val request = Request.Builder()
-                .url("http://130.225.170.93:9001/api/v1/start")
-                .build()
-            */
+            // SERVERVERSION
 
-            // LOCAL VERSION
+            val request = Request.Builder()
+                .url("http://$serverURL/api/v1/start")
+                .build()
+
+
+            // LOCAL VERSION - used for testing
+            /*
             val request = Request.Builder()
                 .url("http://10.16.160.41:8080/api/v1/start")
                 .build()
 
-
+             */
 
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) throw IOException("Unexpected code $response")
@@ -131,14 +134,14 @@ class MainActivity : AppCompatActivity() {
                     println("$name: $value")
                 }
 
-                println("DEBUG_HEY" + response.body!!.string())
+    //            println("DEBUG_HEY" + response.body!!.string())
 
                 val responseGameID = response.header("gameID")
 
                 myGameID = responseGameID!!.toInt()
 
-                println("responseGameID is: $responseGameID")
-                println("MainActivity.myGameID is: ${myGameID}")
+//                println("responseGameID is: $responseGameID")
+  //              println("MainActivity.myGameID is: ${myGameID}")
 
             }
             runOnUiThread { updateUserView() }
@@ -152,19 +155,19 @@ class MainActivity : AppCompatActivity() {
         textView.text = "Contacting server to start new game"
 
         Thread {
-
-            /* SERVERVERSION
+            // SERVERVERSION
             val request = Request.Builder()
-                .url("http://130.225.170.93:9001/api/v1/restart/$myGameID")
+                .url("http://$serverURL/api/v1/restart/$myGameID")
                 .build()
 
-             */
-
             // LOCAL VERSION
+            /*
             val request = Request.Builder()
                 .url("http://10.16.160.41:8080/api/v1/restart/$myGameID")
                 .build()
 
+
+             */
 
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) throw IOException("Unexpected code $response")
@@ -174,7 +177,7 @@ class MainActivity : AppCompatActivity() {
             runOnUiThread {
                 progressBar2.visibility = View.GONE
                 ourMessage = "Game reset at at server"
-                println("HELLO from UIThread")
+//                println("HELLO from UIThread")
                 updateUserView()
             }
 
@@ -188,22 +191,25 @@ class MainActivity : AppCompatActivity() {
         Thread {
             try {
 
-                /* SERVERVERSION
+                // SERVERVERSION
                 val request = Request.Builder()
-                    .url("http://130.225.170.93:9001/api/v1/end/$myGameID")
+                    .url("http://$serverURL/api/v1/end/$myGameID")
                     .build()
-                 */
 
-                     // LOCALVERSION
+
+                // LOCALVERSION . used for testing
+/*
                 val request = Request.Builder()
                     .url("http://10.16.160.41:8080/api/v1/end/$myGameID")
                     .build()
 
 
+ */
+
 
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) throw IOException("Unexpected code $response")
-                    println("DEBUG_HEY" + response.body!!.string())
+                   // println("DEBUG_HEY" + response.body!!.string())
 
                     ourMessage = "Game reset at at server"
                     myGameID = -1
@@ -216,8 +222,7 @@ class MainActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                ourMessage = "Failed to restart game at server"
-                textView.text = "Failed to restart game at server"
+                ourMessage = "Failed to delete account"
                 progressBar2.visibility = View.GONE
                 runOnUiThread { updateUserView() }
             }
@@ -270,7 +275,7 @@ class MainActivity : AppCompatActivity() {
         status = if (intent.getStringExtra("status") != null) ({
         }).toString() else "just_started"
 
-        println("\n IN onRestart status is: $status")
+       // println("\n IN onRestart status is: $status")
         updateUserView()
 
     }
@@ -281,14 +286,13 @@ class MainActivity : AppCompatActivity() {
         status = if (intent.getStringExtra("status") != null) ({
         }).toString() else "just_started"
 
-        println("\n IN onResume status is: $status")
+        // println("\n IN onResume status is: $status")
 
         updateUserView()
     }
 
     override fun onPause() {
         super.onPause()
-
         ourSharedPref.edit().putInt("gameID", myGameID).apply()
 
     }

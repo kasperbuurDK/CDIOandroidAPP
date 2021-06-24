@@ -33,9 +33,9 @@ class ValidateActivity: AppCompatActivity() {
 //    private var ipAdr : String = ""
 
     private val client = OkHttpClient.Builder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .writeTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
+        .connectTimeout(10, TimeUnit.MINUTES)
+        .writeTimeout(10, TimeUnit.MINUTES)
+        .readTimeout(30, TimeUnit.MINUTES)
         .build();
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -119,12 +119,15 @@ class ValidateActivity: AppCompatActivity() {
                 try {
                     client.newCall(request).execute().use { response ->
                         responseBody = response.body!!.string()
-                        if (responseBody.contains("Kort")){
+                        if (responseBody.contains("Kort") ||
+                                responseBody.contains(("Træk")) ||
+                                responseBody.contains("Spillet"))  {
                             goToResponse();
                         } else if (responseBody.contains("bad")) {
                             runOnUiThread {
                                 alDialog("Server error: Server could not analyze image")
                             }
+
                         } else {
                             runOnUiThread {
                                 alDialog("Server error: No response image sent")

@@ -1,5 +1,10 @@
 package com.CDIOgroup18.cameraxapp
 
+/**
+ * Koden i TakePhotoActivity og tilhørende layout er primært lavet af
+ * Kasper Buur Vistesen, s195168
+ */
+
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -31,7 +36,6 @@ import java.util.concurrent.Executors
 class TakePhotoActivity : AppCompatActivity() {
 
     companion object {
-        const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         const val REQUEST_CODE_PERMISSIONS = 10
         val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
     }
@@ -69,8 +73,7 @@ class TakePhotoActivity : AppCompatActivity() {
             )
         }
 
-        // Set up the listener for take photo button
-
+        // Set up the listener for the buttons
        take_photo_button.setOnClickListener { takePhotoGoToValidate() }
        to_menu_button.setOnClickListener { backToMenu() }
 
@@ -82,6 +85,7 @@ class TakePhotoActivity : AppCompatActivity() {
         status = intent.getStringExtra("status")!!
         }
 
+        // display toast message based on the way the activity was started
         when (status) {
             "resumed" -> {
                 ourToastMessage = "Please take photo to start game"
@@ -93,7 +97,7 @@ class TakePhotoActivity : AppCompatActivity() {
                 ourToastMessage = "You declined the move suggested by server, please send new image"
             }
             "noStatusIntent" -> {
-                ourToastMessage = "no status"
+                ourToastMessage = "try again"
             }
             "bad_image" -> {
                 ourToastMessage = "Please take new photo \n " +
@@ -116,11 +120,10 @@ class TakePhotoActivity : AppCompatActivity() {
 
         Toast.makeText(this, ourToastMessage, Toast.LENGTH_LONG).show()
 
-
         outputDirectory = getOutputDirectory()
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        setupTheScreen()
+        setupTheScreen() // method to define size of preview field and draw helper lines
 
     }
 
@@ -137,12 +140,7 @@ class TakePhotoActivity : AppCompatActivity() {
 
         val startX = diffScreenVSviewFinder/2
         val startY = 0
-/*
-        val startX = (screenWidth * 0.1).roundToInt()
-        val startY = (screeHeight * 0.0025).roundToInt()
-        val viewFinderWidth = (screenWidth * 0.8).roundToInt()
-        val viewFinderHeight = (screeHeight * 0.8).roundToInt()
-*/
+
         paramVF.leftMargin = startX
         paramVF.topMargin = startY
         paramVF.height = viewFinderHeight
@@ -202,19 +200,7 @@ class TakePhotoActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    override fun onRestart() {
-        super.onRestart()
-    }
-
-    override fun onResume() {
-        super.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-    }
-
-    override fun onDestroy() {
+        override fun onDestroy() {
         super.onDestroy()
         cameraExecutor.shutdown()
     }
@@ -224,10 +210,7 @@ class TakePhotoActivity : AppCompatActivity() {
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
-        // Create time-stamped output file to hold the image
-        //val photoFile = File(outputDirectory,SimpleDateFormat(FILENAME_FORMAT, Locale.US
-        //    ).format(System.currentTimeMillis()) + ".jpg")
-        //val photoFile = File(outputDirectory,"aPhoto.jpg")
+        // Create output file to hold the image
         val photoFile = File(outputDirectory, "aPhoto.jpg")
 
         // Create output options object which contains file + metadata
@@ -250,22 +233,14 @@ class TakePhotoActivity : AppCompatActivity() {
                     Toast.makeText(baseContext, msg, Toast.LENGTH_LONG).show()
                     Log.d(MainActivity.TAG, msg)
 
-                   // goToValidate()
-                    goToAlternativeValidate()
+                    goToValidate()
                 }
 
             })
 
     }
 
-    private fun goToAlternativeValidate() {
-        intent = Intent(this, ValidateActivity()::class.java)
-        intent.putExtra("imagePath", savedUri)
-        intent.putExtra("outputD", outputDirectory)
-        startActivity(intent)
-    }
-
-    private fun goToValidate() {
+       private fun goToValidate() {
         intent = Intent(this, ValidateActivity::class.java)
         intent.putExtra("imagePath", savedUri)
         intent.putExtra("outputD", outputDirectory)
@@ -290,9 +265,10 @@ class TakePhotoActivity : AppCompatActivity() {
 
             imageCapture =
                 ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).
-                   // setTargetAspectRatio(aspectRatio).
                 setTargetResolution(Size(Resources.getSystem().displayMetrics.widthPixels, Resources.getSystem().displayMetrics.heightPixels)).
                  build()
+            // image is all that is shown on preview screen
+
 
             // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
