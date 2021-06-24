@@ -1,5 +1,10 @@
 package com.CDIOgroup18.cameraxapp
 
+/**
+ * Koden i ResponseActivity2 og tilhørende layout er primært lavet af
+ * Peter Tran, s010219
+ */
+
 import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
@@ -38,7 +43,6 @@ class ResponseActivity2 : AppCompatActivity() {
 
         responseView.text = responseMove
 
-
         // Button to accept image and start a new move
         newMoveButton.setOnClickListener {
             intent = Intent(this, TakePhotoActivity::class.java)
@@ -55,19 +59,9 @@ class ResponseActivity2 : AppCompatActivity() {
 
         // Get image reponse from server and show it
         Thread {
-
-            //SERVERVERSION
-            /*
             val request = Request.Builder()
                 .url("http://130.225.170.93:9001/api/v1/download/${MainActivity.myGameID}")
                 .build()
-             */
-
-            //LOCALVERSION
-            val request = Request.Builder()
-                .url("http://10.16.160.41:8080/api/v1/download/${MainActivity.myGameID}")
-                .build()
-
 
             try {
                 client.newCall(request).execute().use { response ->

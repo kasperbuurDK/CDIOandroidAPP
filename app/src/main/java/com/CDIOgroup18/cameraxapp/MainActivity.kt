@@ -1,5 +1,9 @@
 package com.CDIOgroup18.cameraxapp
 
+/**
+ * Koden i MainActivity og tilhørende layout er primært lavet af
+ * Kasper Buur Vistesen, s195168
+ */
 
 import android.content.Context
 import android.content.Intent

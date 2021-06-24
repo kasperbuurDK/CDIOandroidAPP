@@ -1,5 +1,10 @@
 package com.CDIOgroup18.cameraxapp
 
+/**
+ * Koden i ValidateActivity og tilhørende layout er primært lavet af
+ * Peter Tran, s010219
+ */
+
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Resources
@@ -29,10 +34,8 @@ class ValidateActivity: AppCompatActivity() {
     private var responseBody = ""
     private lateinit var outputDirectory: File
 
-    //test purpose
-//    private var ipAdr : String = ""
-
     private val client = OkHttpClient.Builder()
+        // Timeout set to a longer periode, as time is needed for entering cards manually
         .connectTimeout(10, TimeUnit.MINUTES)
         .writeTimeout(10, TimeUnit.MINUTES)
         .readTimeout(30, TimeUnit.MINUTES)
@@ -71,13 +74,8 @@ class ValidateActivity: AppCompatActivity() {
             goButton.isEnabled = false
             undoButton.isEnabled = false
 
-            //test purpose
-            //ipAdr = textInput.text.toString()
-
-
             val screenWidth = Resources.getSystem().displayMetrics.widthPixels
             val screenHeight = Resources.getSystem().displayMetrics.heightPixels
-
             val imageViewParams = imageTakenView.layoutParams as ViewGroup.MarginLayoutParams
 
             imageViewParams.height = screenHeight
@@ -95,25 +93,17 @@ class ValidateActivity: AppCompatActivity() {
                     .addFormDataPart("file", file.name, file.asRequestBody(MEDIA_TYPE_JPG))
                     .build()
 
-
                 //SERVERVERSION
-                /*
                 val request = Request.Builder()
-                   // .url("http://130.225.170.93:9001/api/v1/upload/${MainActivity.myGameID}")
-                   //130.225.170.93:9001
-                   // .url("http://" + ipAdr +"/api/v1/upload/${MainActivity.myGameID}")
+                    .url("http://130.225.170.93:9001/api/v1/upload/${MainActivity.myGameID}")
                     .post(requestBody)
                     .build()
 
-                 */
-
                 //LOCALVERSION
+                /*
                 val request = Request.Builder().
                 url("http://10.16.160.41:8080/api/v1/upload/${MainActivity.myGameID}").
-                        post(requestBody).build()
-
-
-
+                        post(requestBody).build()*/
 
                 //Send photo
                 try {
@@ -133,23 +123,6 @@ class ValidateActivity: AppCompatActivity() {
                                 alDialog("Server error: No response image sent")
                             }
                         }
-                       /* when () {
-                            //"We uploaded the file!" -> {
-                            //    goToResponse()
-                            //}
-                                // skal udskrive response string HUSK
-
-                             //noget med kort
-                            "" -> {
-
-                            }
-                                    "bad_image" -> {
-
-                            }
-                            else -> {
-
-                            }
-                        }*/
                     }
                 } catch (e : Exception) {
                     e.printStackTrace()
